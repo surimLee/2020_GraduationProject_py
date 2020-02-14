@@ -7,7 +7,7 @@
 //hc06(Tx,Rx)
 SoftwareSerial hc06(10,11);
 
-char temp = '0';
+String temp = " ";
 String Character = " ";
 
 //variable initializtion
@@ -64,6 +64,20 @@ void printfun(char cp) //to avoid printing repeating symbols
 }
 */
 
+void printChar(String Character){
+  if(Character != " "){
+    if (Character == temp)
+    {
+      
+    }
+    else{
+      hc06.println(Character);
+      temp = Character;
+    }
+  }
+}
+
+
 void loop()
 {
 
@@ -104,20 +118,20 @@ void loop()
   angle4 = map(flexADC4, sensorMin4, sensorMax4, 0, 3);
   angle5 = map(flexADC5, sensorMin5, sensorMax5, 0, 3);
 
-  if(angle1==0 && angle2==0 && angle3==0 && angle4==0 && angle5==0){Character=" ";}
-  if(angle1==0 && angle2==0 && angle3>=2 && angle4>=2 && angle5>=2){Character="ㄱ";}
-  if(angle1>=2 && angle2==0 && angle3==0 && angle4>=2 && angle5>=2){Character="ㄷ";}
-  if(angle1>=1 && angle2==0 && angle3==0 && angle4==0 && angle5==2){Character="ㄹ";}
-  if(angle1==1 && angle2==3 && angle3==3 && angle4>=3 && angle5>=2){Character="ㅁ";}
-  if(angle1>=2 && angle2==0 && angle3==0 && angle4==0 && angle5==0){Character="ㅂ";}
+  if(angle1==0 && angle2==0 && angle3==0 && angle4==0 && angle5==0){ printChar(" "); }
+  if(angle1==0 && angle2==0 && angle3>=2 && angle4>=2 && angle5>=2){ printChar("ㄱ"); }
+  if(angle1>=2 && angle2==0 && angle3==0 && angle4>=2 && angle5>=2){ printChar("ㄷ"); }
+  if(angle1>=1 && angle2==0 && angle3==0 && angle4==0 && angle5==2){ printChar("ㄹ"); }
+  if(angle1>=1 && angle2==3 && angle3==3 && angle4>=3 && angle5>=2){ printChar("ㅁ"); }
+  if(angle1>=2 && angle2==0 && angle3==0 && angle4==0 && angle5==0){ printChar("ㅂ"); }
 
   Serial.println(angle1);
   Serial.println(angle2);
   Serial.println(angle3);
   Serial.println(angle4);
   Serial.println(angle5);
-  Serial.println(Character);
-  hc06.println(Character);
+  //Serial.println(Character);
+  //hc06.println(Character);
   Serial.println();
   delay(1000);
 
