@@ -52,7 +52,7 @@ client_socket, address = server_socket.accept()
 # 연결 요청 성공. 접속한 클라이언트의 주소입니다.
 print("I got a connection from ", address)
 
-data = None
+data = " "
 
 # 무한루프를 돌면서 데이터 수신
 while True:
@@ -61,15 +61,15 @@ while True:
     data = client_socket.recv(1024)
 
     # 빈 문자열을 수신하면 루프를 중지합니다.
-    if not data:
-        break
+    #if not data:
+    #    break
 
 
     # 수신받은 문자열을 출력합니다.
     print('Received from', address, data.decode())
 
     # 받은 문자열을 다시 클라이언트로 전송해줍니다.(에코)
-    client_socket.sendall(data)
+    #client_socket.sendall(data)
 
 
 # 소켓을 닫습니다.

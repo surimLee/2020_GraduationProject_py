@@ -1,4 +1,6 @@
 import socket
+import numpy
+import time
 
 
 # 서버의 주소입니다. hostname 또는 ip address를 사용할 수 있습니다.
@@ -15,12 +17,18 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # 지정한 HOST와 PORT를 사용하여 서버에 접속합니다.
 client_socket.connect((HOST, PORT))
 
-# 메시지를 전송합니다.
-client_socket.sendall('안녕'.encode())
+while True:
 
-# 메시지를 수신합니다.
-data = client_socket.recv(1024)
-print('Received', repr(data.decode()))
+        # 데이터 읽고
+        csv_data = numpy.loadtxt('test_data.txt', dtype='int')
+
+        for line in range(10):
+            print(csv_data[line])
+            temp_data = str(csv_data[line])
+
+            # 메시지를 전송합니다.
+            client_socket.sendall(temp_data.encode())
+            time.sleep(1)
 
 # 소켓을 닫습니다.
 client_socket.close()
