@@ -1,20 +1,22 @@
 import serial
 from numpy import *
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 
-ard = serial.Serial('COM3', 9600)
-ard.readline()  # read "hello python"
+ard = serial.Serial('COM4', 9600)
+ard.readline()
 ard.flush()
 
 lstX = []
 lstY = []
+arrX=None
+arrY=None
 
 plt.ion()
 fig = plt.figure()
-sf = fig.add_subplot(111)
-plt.xlim([0, 60])
-plt.ylim([300, 1000])
-line1, = sf.plot(arrX, arrY, 'r-')
+sf = fig.add_subplot(1,1,1)
+plt.xlim([0,60])
+plt.ylim([0,30])
+line1, = sf.plot(arrX,arrY,'-r')
 
 while True:
     # 아두이노에서 데이터를 한 절 전송받는다
