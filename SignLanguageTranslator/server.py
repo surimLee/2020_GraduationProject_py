@@ -1,7 +1,14 @@
+# ====================================================================
+
 from socket import *
 import socket
 import os  # 환경변수나 디렉터리, 파일등의 OS 자원을 제어하기 위함
 import time
+import numpy  # 벡터 및 행렬 연산과 관련된 편리한 기능을 제공
+import pandas as pd  # series, dataFrame 등의 자료구조를 활용, 데이터 분석
+import matplotlib  # 데이터 시각화
+
+# ====================================================================
 
 # 데이터 파일 저장경로
 src = "./temp"
@@ -12,6 +19,7 @@ HOST = '127.0.0.1'
 # 클라이언트 접속을 대기하는 포트 번호입니다.
 PORT = 9999
 
+# ====================================================================
 
 def filename():
     dte = time.localtime()
@@ -24,6 +32,16 @@ def filename():
     dataName = src + str(day) + '_' + str(hour) + '_' + str(minn) + '_' + str(sec)
     return dataName
 
+def makeDataList():
+    rows = 10
+    cols = 6
+    datalist = [] # 전송받은 데이터 저장할 리스트
+
+    # 2차원 리스트를 생성한다.
+    for row in range(rows):
+        datalist += [[0]*cols]
+        
+# ====================================================================
 
 # 소켓 객체를 생성합니다.
 # 주소 체계(address family)로 IPv4, 소켓 타입으로 TCP 사용합니다.
@@ -52,24 +70,34 @@ client_socket, address = server_socket.accept()
 # 연결 요청 성공. 접속한 클라이언트의 주소입니다.
 print("I got a connection from ", address)
 
-data = " "
-
-# 무한루프를 돌면서 데이터 수신
+# 데이터 수신
 while True:
 
     # 클라이언트가 보낸 메시지를 수신하기 위해 대기합니다.
-    data = client_socket.recv(1024)
+    receive_data = client_socket.recv(1024)
 
     # 빈 문자열을 수신하면 루프를 중지합니다.
-    #if not data:
+    #if not receive_data:
     #    break
 
+    receive_data = " "
 
-    # 수신받은 문자열을 출력합니다.
-    print('Received from', address, data.decode())
+    # 수신받은 문자열(한 줄)을 출력합니다.
+    #print('Received from', address, receive_data.decode())
+    print(receive_data.decode())
 
-    # 받은 문자열을 다시 클라이언트로 전송해줍니다.(에코)
-    #client_socket.sendall(data)
+    # 메세지 수신시마다 반복
+    temp_data = receive_data.decode()
+
+    # 줄을 공백문자로 분리한다. (한 줄의 데이터를 각각의 센서값으로)
+    values = temp_data.split(" ")
+
+    # 수신받은 문자열을 파일로 저장합니다.
+    save_data = numpy.loadtxt('save_data.txt', dtype='int')
+    makeDataList()
+
+
+
 
 
 # 소켓을 닫습니다.

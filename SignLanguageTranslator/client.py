@@ -19,16 +19,23 @@ client_socket.connect((HOST, PORT))
 
 while True:
 
-        # 데이터 읽고
+        # 테스트를 위해 임의로 생성한 파일에서 데이터 읽고
         csv_data = numpy.loadtxt('test_data.txt', dtype='int')
 
+        # 라인 수만큼 테스트 테스트
         for line in range(10):
+
+            # 한 줄 씩 읽어서
             print(csv_data[line])
+
+            # 전송을 위해 string으로 캐스팅 - server에서 파싱 예정
             temp_data = str(csv_data[line])
 
             # 메시지를 전송합니다.
             client_socket.sendall(temp_data.encode())
-            time.sleep(1)
+            time.sleep(1)  # 1초 쉬고 다음라인으로
+
+        break
 
 # 소켓을 닫습니다.
 client_socket.close()
