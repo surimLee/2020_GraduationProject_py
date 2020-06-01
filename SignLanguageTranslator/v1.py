@@ -10,7 +10,9 @@ import time
 plt.style.use('fivethirtyeight')
 port = 9999  # 소켓 통신할 포트번호
 isGetBlank = 0  # 공백문자를 받으면 카운팅되는 변수 -> 3번이상 공백문자 받으면 소켓 종료해야함
-recv_temp = ''
+recvData = ''
+recvLine = ''
+
 
 global right_1st
 global right_2ed
@@ -140,17 +142,14 @@ def send(data):
         SendData=SendData+"\n"
         data.send(SendData.encode('utf-8'))
 
-# 수신부
 def receive(data):
     while True:
-        f = open("saveData.txt", 'a')
-
         ############### 예고없이 연결 끊겼을 때 재연결 가능하도록 ################
         try :
-            recvData = data.recv(1024)
+            recv_temp = data.recv(1024)
 
             # 스크롤 올라가는 에러 처리
-            if len(recvData) < 6 :
+            if len(recv_temp) < 6 :
                 num_of_Null = num_of_Null + 1
                 if num_of_Null > 10 :
                     print("[ERROR] NULL 문자 많이 옴")
@@ -162,59 +161,85 @@ def receive(data):
             reconnect()
 
         ########## 전송되는 메세지 인코딩 해서 화면에 sender랑 함께 표기 ##########
-        recv_temp = recvData.decode('utf-8')
-        print(addr,":", recv_temp)
+        recvData = recv_temp.decode('utf-8')
+
+        lines = recvData.split("Q\n")  # 여러줄이 수신된 경우 개행문자를 기준으로 분리
+
+        for line in lines:
+            if len(line) > 10:
+                print(addr, " : ", line)
+                input_txt(line)
+            else :
+                pass
+
+        # 원래 있던 거임
+        # print(addr,":", recvData)
 
 
-        f.write(str(len(right_1st)+1) +' ' +recv_temp +'\n')
-        f.close()
+
 
         ##################### 받아온 센서값 해당 변수에 파싱 #####################
         # 헤더가 'R'이면 오른손에 정보 넣기
-        if ( (recv_temp.split(' ')[0]) == 'R') :
-            try :
-                right_1st.append(int(recv_temp.split(' ')[1]))
-                right_2ed.append(int(recv_temp.split(' ')[2]))
-                right_3rd.append(int(recv_temp.split(' ')[3]))
-                right_4th.append(int(recv_temp.split(' ')[4]))
-                right_5th.append(int(recv_temp.split(' ')[5]))
-                right_accX.append(int(recv_temp.split(' ')[6]))
-                right_accY.append(int(recv_temp.split(' ')[7]))
-                right_accZ.append(int(recv_temp.split(' ')[8]))
-                right_degX.append(int(recv_temp.split(' ')[9]))
-                right_degY.append(int(recv_temp.split(' ')[10]))
-                right_degZ.append(int(recv_temp.split(' ')[11]))
-                right_lstX.append(len(right_1st))
-            # 오른손 센서값 넣는 와중에 클라이언트가 강제 종료되면 다시 소켓 연결 대기
-            except :
-                print("[ERROR] 오른손 형식")
-                reconnect()
 
-        # 헤더가 'L'이면 왼손손에 정보 넣기
-        elif ( (recv_temp.split(' ')[0]) == 'L') :
-            try :
-                left_1st.append(int(recv_temp.split(' ')[1]))
-                left_2ed.append(int(recv_temp.split(' ')[2]))
-                left_3rd.append(int(recv_temp.split(' ')[3]))
-                left_4th.append(int(recv_temp.split(' ')[4]))
-                left_5th.append(int(recv_temp.split(' ')[5]))
-                left_accX.append(int(recv_temp.split(' ')[6]))
-                left_accY.append(int(recv_temp.split(' ')[7]))
-                left_accZ.append(int(recv_temp.split(' ')[8]))
-                left_degX.append(int(recv_temp.split(' ')[9]))
-                left_degY.append(int(recv_temp.split(' ')[10]))
-                left_degZ.append(int(recv_temp.split(' ')[11]))
-                left_lstX.append(len(left_1st))
-            # 오른손 센서값 넣는 와중에 클라이언트가 강제 종료되면 다시 소켓 연결 대기
-            except :
-                print("[ERROR] 왼손 형식")
-                reconnect()
         #############################################################
 
         if (len(right_1st)>4):
             check_gap(right_1st[-1], right_2ed[-1], right_3rd[-1], right_4th[-1], right_5th[-1],
                       right_accX[-1], right_accY[-1], right_accZ[-1], right_degX[-1], right_degY[-1], right_degZ[-1]
                       ,right_accX[-2], right_accY[-2], right_accZ[-2], right_degX[-2], right_degY[-2], right_degZ[-2])
+
+# 수신부
+def input_txt(line):
+    fR = open("saveDataR.txt", 'a')
+    fL = open("saveDataL.txt", 'a')
+    recv_line = line
+    if ((recv_line.split(' ')[0]) == 'R'):
+        try:
+            #  오른손 데이터 파일에 쓰기
+            fR.write(str(len(right_1st) + 1) + ' ' + recv_line + '\n')
+            fR.close()
+
+            right_1st.append(int(recv_line.split(' ')[1]))
+            right_2ed.append(int(recv_line.split(' ')[2]))
+            right_3rd.append(int(recv_line.split(' ')[3]))
+            right_4th.append(int(recv_line.split(' ')[4]))
+            right_5th.append(int(recv_line.split(' ')[5]))
+            right_accX.append(int(recv_line.split(' ')[6]))
+            right_accY.append(int(recv_line.split(' ')[7]))
+            right_accZ.append(int(recv_line.split(' ')[8]))
+            right_degX.append(int(recv_line.split(' ')[9]))
+            right_degY.append(int(recv_line.split(' ')[10]))
+            right_degZ.append(int(recv_line.split(' ')[11]))
+            right_lstX.append(len(right_1st))
+        # 오른손 센서값 넣는 와중에 클라이언트가 강제 종료되면 다시 소켓 연결 대기
+        except:
+            print("[ERROR] 오른손 형식 오류")
+            reconnect()
+
+    # 헤더가 'L'이면 왼손손에 정보 넣기
+    elif ((recv_line.split(' ')[0]) == 'L'):
+        try:
+            #  왼손 데이터 파일에 쓰기
+            fL.write(str(len(left_1st) + 1) + ' ' + recv_line + '\n')
+            fL.close()
+
+            left_1st.append(int(recv_line.split(' ')[1]))
+            left_2ed.append(int(recv_line.split(' ')[2]))
+            left_3rd.append(int(recv_line.split(' ')[3]))
+            left_4th.append(int(recv_line.split(' ')[4]))
+            left_5th.append(int(recv_line.split(' ')[5]))
+            left_accX.append(int(recv_line.split(' ')[6]))
+            left_accY.append(int(recv_line.split(' ')[7]))
+            left_accZ.append(int(recv_line.split(' ')[8]))
+            left_degX.append(int(recv_line.split(' ')[9]))
+            left_degY.append(int(recv_line.split(' ')[10]))
+            left_degZ.append(int(recv_line.split(' ')[11]))
+            left_lstX.append(len(left_1st))
+        # 오른손 센서값 넣는 와중에 클라이언트가 강제 종료되면 다시 소켓 연결 대기
+        except:
+            print("[ERROR] 왼손 형식 오류")
+            reconnect()
+
 
 # 예상치 못하게 소켓 연결이 끊어지는 경우 소켓 재연결
 def reconnect():
@@ -275,13 +300,13 @@ def setSoket():
 
     # 서버가 하나의 클라이언트의 접속을 허용하도록 합니다.
     svrsock.listen(1)
-    print (">>> TCPServer Waiting for client...")
+    print ("[STATE] TCP Server Waiting for client...")
 
     # accept 함수에서 대기하다가 클라이언트가 접속하면 새로운 소켓을 리턴합니다.
     conn,addr=svrsock.accept()
 
     # 연결 요청 성공. 접속한 클라이언트의 주소입니다.
-    print(">>> I got a connection from ", addr)
+    print("[STATE] I got a connection from ", addr)
 
     sender=threading.Thread(target=send, args=(conn,))
     receiver=threading.Thread(target=receive, args=(conn,))
@@ -290,7 +315,7 @@ def setSoket():
     receiver.start()
 
     plt.show()
-    print(">>> Floating Start")
+    print("[STATE] 그래프 Floating Start")
 
     while True:
         time.sleep(1)
@@ -334,13 +359,15 @@ def setFlex():
 # 첫 실행 시 파일 리셋하고 소켓이랑 애니메이션 settiong하는 부분
 def main():
 
-    f = open("saveData.txt", 'w')
-    f.close()
+    fR = open("saveDataR.txt", 'w')
+    fR.close()
+    fL = open("saveDataL.txt", 'w')
+    fL.close()
 
     # ani = threading.Thread(target=animation.FuncAnimation(fig, animate, interval=200))
-    ani = animation.FuncAnimation(fig, animate, interval=100)  # Acc
-    ani2 = animation.FuncAnimation(fig, animate2, interval=100)  #Deg
-    print(">>> Animation Set")
+#    ani = animation.FuncAnimation(fig, animate, interval=100)  # Acc
+#    ani2 = animation.FuncAnimation(fig, animate2, interval=100)  #Deg
+    print("[STATE] Animation Set")
 
     # setflex = threading.Thread(target=setFlex)
     # setflex.start()
