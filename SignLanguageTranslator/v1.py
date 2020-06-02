@@ -57,6 +57,24 @@ global R_gap_past_right_DegY  # 지난 DegY - 지지난 DegY
 global R_gap_past_right_DegZ  # 지난 DegZ - 지지난 DegZ
 global R_noChangeDeg_past  # 지난 변화 여부 체크
 
+global L_gap_right_AccX  # 현재 AccX - 지난 AccX
+global L_gap_right_AccY  # 현재 AccY - 지난 AccY
+global L_gap_right_AccZ  # 현재 AccZ - 지난 AccZ
+global L_noChangeAcc  # 변화 여부 체크
+global L_gap_right_DegX  # 현재 DegX - 지난 DegX
+global L_gap_right_DegY  # 현재 DegY - 지난 DegY
+global L_gap_right_DegZ  # 현재 DegZ - 지난 DegZ
+global L_noChangeDeg  # 변화 여부 체크
+global L_gap_past_right_AccX  # 지난 AccX - 지지난 AccX
+global L_gap_past_right_AccY  # 지난 AccY - 지지난 AccY
+global L_gap_past_right_AccZ  # 지난 AccZ - 지지난 AccZ
+global L_noChangeAcc_past  # 지난 변화 여부 체크
+global L_gap_past_right_DegX  # 지난 DegX - 지지난 DegX
+global L_gap_past_right_DegY  # 지난 DegY - 지지난 DegY
+global L_gap_past_right_DegZ  # 지난 DegZ - 지지난 DegZ
+global L_noChangeDeg_past  # 지난 변화 여부 체크
+
+
 check_header = ''
 
 global num_of_Null
@@ -93,17 +111,19 @@ root = tk.Tk()
 root.wm_title("SignLanguageTranslator")  # 창이름
 
 fig = plt.figure(figsize=(10,5), dpi=100)     #figure(도표) 생성
-ax1 = fig.add_subplot(211, ylim=(0,60))
-ax2 = fig.add_subplot(212, ylim=(0,60))
+ax1 = fig.add_subplot(222, ylim=(0,60)) #오른손 Acc
+ax2 = fig.add_subplot(224, ylim=(0,60)) #오른손 Deg
+ax3 = fig.add_subplot(221, ylim=(0,60)) #왼손 Acc
+ax4 = fig.add_subplot(223, ylim=(0,60)) #왼손 Deg
 
 # 오른손 가속도 그래프
 def animate(i):  # Acc Graph
-    graph_data = open('saveData.txt','r').read()
+    graph_data = open('saveDataR.txt','r').read()
     lines = graph_data.split('\n')
     acc_x = []  #x축
-    acc_Y1 = []  #AccX
-    acc_Y2 = []  #AccY
-    acc_Y3 = []  #AccZ
+    acc_Y1 = []  #y축 AccX
+    acc_Y2 = []  #y축 AccY
+    acc_Y3 = []  #y축 AccZ
 
     for line in lines:
         if len(line) > 1:
@@ -121,12 +141,12 @@ def animate(i):  # Acc Graph
 
 # 오른손 각도 그래프
 def animate2(i):  # Deg Graph
-    graph_data = open('saveData.txt','r').read()
+    graph_data = open('saveDataR.txt','r').read()
     lines = graph_data.split('\n')
     deg_x = []  #x축
-    deg_Y1 = []  #degX
-    deg_Y2 = []  #degY
-    deg_Y3 = []  #degZ
+    deg_Y1 = []  #y축 degX
+    deg_Y2 = []  #y축 degY
+    deg_Y3 = []  #y축 degZ
     for line in lines:
         if len(line) > 1:
             deg_x.append(int(line.split(' ')[0]))
@@ -141,6 +161,50 @@ def animate2(i):  # Deg Graph
     ax2.legend(loc='upper right')
     ax2.set_title("Degree")
 
+# 왼손 가속도 그래프
+def animate3(i):  # Acc Graph
+    graph_data = open('saveDataL.txt','r').read()
+    lines = graph_data.split('\n')
+    acc_x = []  #x축
+    acc_Y1 = []  #y축 AccX
+    acc_Y2 = []  #y축 AccY
+    acc_Y3 = []  #y축 AccZ
+
+    for line in lines:
+        if len(line) > 1:
+            acc_x.append(int(line.split(' ')[0]))
+            acc_Y1.append(int(line.split(' ')[6]))
+            acc_Y2.append(int(line.split(' ')[7]))
+            acc_Y3.append(int(line.split(' ')[8]))
+
+    ax3.clear()
+    ax3.plot(acc_x[-30:], acc_Y1[-30:], color='red', linewidth=1, label="AccX")
+    ax3.plot(acc_x[-30:], acc_Y2[-30:], color='blue', linewidth=1, label="AccY")
+    ax3.plot(acc_x[-30:], acc_Y3[-30:], color='green', linewidth=1, label="AccZ")
+    ax3.legend(loc='upper right')
+    ax3.set_title("Acceleration")
+
+# 오른손 각도 그래프
+def animate4(i):  # Deg Graph
+    graph_data = open('saveDataL.txt','r').read()
+    lines = graph_data.split('\n')
+    deg_x = []  #x축
+    deg_Y1 = []  #y축 degX
+    deg_Y2 = []  #y축 degY
+    deg_Y3 = []  #y축 degZ
+    for line in lines:
+        if len(line) > 1:
+            deg_x.append(int(line.split(' ')[0]))
+            deg_Y1.append(int(line.split(' ')[9]))
+            deg_Y2.append(int(line.split(' ')[10]))
+            deg_Y3.append(int(line.split(' ')[11]))
+
+    ax4.clear()
+    ax4.plot(deg_x[-30:], deg_Y1[-30:], color='red', linewidth=1, label="degX")
+    ax4.plot(deg_x[-30:], deg_Y2[-30:], color='blue', linewidth=1, label="degY")
+    ax4.plot(deg_x[-30:], deg_Y3[-30:], color='green', linewidth=1, label="degZ")
+    ax4.legend(loc='upper right')
+    ax4.set_title("Degree")
 
 # 전송부
 def send(data):
@@ -259,8 +323,9 @@ def input_txt(line):
 
         # 오른손 센서값 넣는 와중에 클라이언트가 강제 종료되면 다시 소켓 연결 대기
         except:
-            print("[ERROR] 왼손 형식 오류")
-            reconnect()
+            pass
+            # print("[ERROR] 왼손 형식 오류")
+            # reconnect()
 
 
 # 예상치 못하게 소켓 연결이 끊어지는 경우 소켓 재연결
@@ -375,7 +440,7 @@ def setSoket():
     # HOST는 hostname, ip address, 빈 문자열 ""이 될 수 있습니다.
     # 빈 문자열이면 모든 네트워크 인터페이스로부터의 접속을 허용합니다.
     # PORT는 1-65535 사이의 숫자를 사용할 수 있습니다.
-    svrsock.bind(("", port))
+    svrsock.bind(('', port))
 
     # 서버가 하나의 클라이언트의 접속을 허용하도록 합니다.
     svrsock.listen(1)
@@ -443,9 +508,10 @@ def main():
     fL = open("saveDataL.txt", 'w')
     fL.close()
 
-    # ani = threading.Thread(target=animation.FuncAnimation(fig, animate, interval=200))
-#    ani = animation.FuncAnimation(fig, animate, interval=100)  # Acc
-#    ani2 = animation.FuncAnimation(fig, animate2, interval=100)  #Deg
+    ani = animation.FuncAnimation(fig, animate, interval=100)  # Acc
+    ani2 = animation.FuncAnimation(fig, animate2, interval=100)  #Deg
+    ani3 = animation.FuncAnimation(fig, animate3, interval=100)  # Acc
+    ani4 = animation.FuncAnimation(fig, animate4, interval=100)  # Deg
     print("[STATE] Animation Set")
 
     # setflex = threading.Thread(target=setFlex)
