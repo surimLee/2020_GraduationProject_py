@@ -40,14 +40,22 @@ global left_degY
 global left_degZ
 global left_lstX
 
-global gap_right_AccX  # 변화량 체크 변수
-global gap_right_AccY  # 변화량 체크 변수
-global gap_right_AccZ  # 변화량 체크 변수
-global noChangeAcc  # 변화 여부 체크
-global gap_right_DegX  # 변화량 체크 변수
-global gap_right_DegY  # 변화량 체크 변수
-global gap_right_DegZ  # 변화량 체크 변수
-global noChangeDeg  # 변화 여부 체크
+global R_gap_right_AccX  # 현재 AccX - 지난 AccX
+global R_gap_right_AccY  # 현재 AccY - 지난 AccY
+global R_gap_right_AccZ  # 현재 AccZ - 지난 AccZ
+global R_noChangeAcc  # 변화 여부 체크
+global R_gap_right_DegX  # 현재 DegX - 지난 DegX
+global R_gap_right_DegY  # 현재 DegY - 지난 DegY
+global R_gap_right_DegZ  # 현재 DegZ - 지난 DegZ
+global R_noChangeDeg  # 변화 여부 체크
+global R_gap_past_right_AccX  # 지난 AccX - 지지난 AccX
+global R_gap_past_right_AccY  # 지난 AccY - 지지난 AccY
+global R_gap_past_right_AccZ  # 지난 AccZ - 지지난 AccZ
+global R_noChangeAcc_past  # 지난 변화 여부 체크
+global R_gap_past_right_DegX  # 지난 DegX - 지지난 DegX
+global R_gap_past_right_DegY  # 지난 DegY - 지지난 DegY
+global R_gap_past_right_DegZ  # 지난 DegZ - 지지난 DegZ
+global R_noChangeDeg_past  # 지난 변화 여부 체크
 
 check_header = ''
 
@@ -142,6 +150,7 @@ def send(data):
         SendData=SendData+"\n"
         data.send(SendData.encode('utf-8'))
 
+# 수신부
 def receive(data):
     while True:
         ############### 예고없이 연결 끊겼을 때 재연결 가능하도록 ################
@@ -165,30 +174,21 @@ def receive(data):
 
         lines = recvData.split("Q\n")  # 여러줄이 수신된 경우 개행문자를 기준으로 분리
 
+        #  개행문자를 기준으로 분리한 라인들을 파일에 쓰고 화면에 출력
         for line in lines:
+            #  잘못 잘려진 라인은 버려지도록 길이 체크
             if len(line) > 10:
+                #  제대로 데이터 수신된 경우에만 화면에 출력
                 print(addr, " : ", line)
+                #  어느 손인지 나눠서 text 파일에 쓸 수 있도록 함수 호출
                 input_txt(line)
+            #  잘못 잘려진 라인인 경우 그냥 버림
             else :
                 pass
 
-        # 원래 있던 거임
-        # print(addr,":", recvData)
 
 
-
-
-        ##################### 받아온 센서값 해당 변수에 파싱 #####################
-        # 헤더가 'R'이면 오른손에 정보 넣기
-
-        #############################################################
-
-        if (len(right_1st)>4):
-            check_gap(right_1st[-1], right_2ed[-1], right_3rd[-1], right_4th[-1], right_5th[-1],
-                      right_accX[-1], right_accY[-1], right_accZ[-1], right_degX[-1], right_degY[-1], right_degZ[-1]
-                      ,right_accX[-2], right_accY[-2], right_accZ[-2], right_degX[-2], right_degY[-2], right_degZ[-2])
-
-# 수신부
+# 라인별로 분리한 데이터를 헤더파일에 맞춰 알맞은 파일에 쓰기
 def input_txt(line):
     fR = open("saveDataR.txt", 'a')
     fL = open("saveDataL.txt", 'a')
@@ -211,6 +211,15 @@ def input_txt(line):
             right_degY.append(int(recv_line.split(' ')[10]))
             right_degZ.append(int(recv_line.split(' ')[11]))
             right_lstX.append(len(right_1st))
+
+            if (len(right_1st) > 15):
+                check_gap(right_1st[-1], right_2ed[-1], right_3rd[-1], right_4th[-1], right_5th[-1],
+                          right_accX[-1], right_accY[-1], right_accZ[-1], right_degX[-1], right_degY[-1], right_degZ[-1]
+                          , right_accX[-2], right_accY[-2], right_accZ[-2], right_degX[-2], right_degY[-2],
+                          right_degZ[-2], right_accX[-3], right_accY[-3], right_accZ[-3], right_degX[-3], right_degY[-3],
+                          right_degZ[-3])
+
+
         # 오른손 센서값 넣는 와중에 클라이언트가 강제 종료되면 다시 소켓 연결 대기
         except:
             print("[ERROR] 오른손 형식 오류")
@@ -249,38 +258,72 @@ def reconnect():
     # datasave 한 거 날려줘야 함
 
 # 동작 구간 판별을 위해 움직임 정도를 체크하는 함수
-def check_gap(recent_1st, recent_2nd, recent_3rd, recent_4th, recent_5th,
-              recent_accX, recent_accY, recent_accZ, recent_degX, recent_degY, recent_degZ
-              ,past_accX, past_accY, past_accZ, past_degX, past_degY, past_degZ):
+def check_gap(R_recent_1st, R_recent_2nd, R_recent_3rd, R_recent_4th, R_recent_5th,
+              R_recent_accX, R_recent_accY, R_recent_accZ, R_recent_degX, R_recent_degY, R_recent_degZ
+              ,R_past_accX, R_past_accY, R_past_accZ, R_past_degX, R_past_degY, R_past_degZ
+              ,R_ppast_accX, R_ppast_accY, R_ppast_accZ, R_ppast_degX, R_ppast_degY, R_ppast_degZ):
 
-    gap_right_AccX = abs(recent_accX-past_accX)
-    gap_right_AccY = abs(recent_accY-past_accY)
-    gap_right_AccZ = abs(recent_accZ-past_accZ)
-    gap_right_DegX = abs(recent_degX-past_degX)
-    gap_right_DegY = abs(recent_degY-past_degY)
-    gap_right_DegZ = abs(recent_degZ-past_degZ)
+    R_gap_right_AccX = abs(R_recent_accX-R_past_accX)
+    R_gap_right_AccY = abs(R_recent_accY-R_past_accY)
+    R_gap_right_AccZ = abs(R_recent_accZ-R_past_accZ)
+    R_gap_right_DegX = abs(R_recent_degX-R_past_degX)
+    R_gap_right_DegY = abs(R_recent_degY-R_past_degY)
+    R_gap_right_DegZ = abs(R_recent_degZ-R_past_degZ)
 
-#    flexSensorValue1.set(recent_1st)
+    R_gap_past_right_AccX = abs(R_past_accX-R_ppast_accX)
+    R_gap_past_right_AccY = abs(R_past_accY-R_ppast_accY)
+    R_gap_past_right_AccZ = abs(R_past_accZ-R_ppast_accZ)
+    R_gap_past_right_DegX = abs(R_past_degX-R_ppast_degX)
+    R_gap_past_right_DegY = abs(R_past_degY-R_ppast_degY)
+    R_gap_past_right_DegZ = abs(R_past_degZ-R_ppast_degZ)
 
-    if (gap_right_AccX < 10 and gap_right_AccY < 10 and gap_right_AccZ < 10):
-        noChangeAcc = "Yes"
-    else : noChangeAcc = "No"
-    print("[check] noChangeAcc : " + noChangeAcc)
+    # 현재 가속도 값 변화량 체크
+    if (R_gap_right_AccX < 10 and R_gap_right_AccY < 10 and R_gap_right_AccZ < 10):
+        noChangeAcc = True
+    else : noChangeAcc = False
+    print("[check] 현재 가속도 값 변화 : " + noChangeAcc)
 
-    if (gap_right_DegX < 10 and gap_right_DegY < 10 and gap_right_DegZ < 10):
-        noChangeDeg = "Yes"
-    else : noChangeDeg = "No"
-    print("[check] noChangeDeg : " + noChangeDeg)
+    # 현재 기울기 값 변화량 체크
+    if (R_gap_right_DegX < 10 and R_gap_right_DegY < 10 and R_gap_right_DegZ < 10):
+        noChangeDeg = True
+    else : noChangeDeg = False
+    print("[check] 현재 기울기 값 변화 : " + noChangeDeg)
 
-    if(noChangeAcc == "Yes" and noChangeDeg == "Yes"):
-        match_Sign(recent_1st, recent_2nd, recent_3rd, recent_4th, recent_5th,
-                   recent_accX, recent_accY, recent_accZ, recent_degX, recent_degY, recent_degZ)
+    # 지난 가속도 값 변화량 체크
+    if (R_gap_past_right_AccX < 10 and R_gap_past_right_AccY < 10 and R_gap_past_right_AccZ < 10):
+        noChangeAcc_past = True
+    else : noChangeAcc_past = False
+    print("[check] 지난 가속도 값 변화 : " + noChangeAcc_past)
+
+    # 지난 기울기 값 변화량 체크
+    if (R_gap_past_right_DegX < 10 and R_gap_past_right_DegY < 10 and R_gap_past_right_DegZ < 10):
+        noChangeDeg_past = True
+    else : noChangeDeg_past = False
+    print("[check] 지난 기울기 값 변화 : " + noChangeDeg_past)
+
+    # 만약 움직이다 멈춘 경우이면
+    if(noChangeAcc == True and noChangeAcc_past == False and noChangeDeg == True and noChangeDeg_past == False):
+        match_Sign(R_recent_1st, R_recent_2nd, R_recent_3rd, R_recent_4th, R_recent_5th,
+                   R_recent_accX, R_recent_accY, R_recent_accZ, R_recent_degX, R_recent_degY, R_recent_degZ)
 
 
-def match_Sign(recent_1st, recent_2nd, recent_3rd, recent_4th, recent_5th,
-               recent_accX, recent_accY, recent_accZ, recent_degX, recent_degY, recent_degZ):
-    print("[check]Match_Sign")
+def match_Sign(R_recent_1st, R_recent_2nd, R_recent_3rd, R_recent_4th, R_recent_5th
+               ,R_recent_accX, R_recent_accY, R_recent_accZ, R_recent_degX, R_recent_degY, R_recent_degZ):
+    print("[State] 오른손 지화 패턴 매칭 시작")
 
+    if (R_recent_1st< 3 and R_recent_2nd < 3 and R_recent_3rd > 8 and R_recent_4th > 8 and R_recent_5th > 8 and
+            R_recent_accX < -70 and R_recent_accY > 0 and R_recent_accY < 20 and R_recent_accZ > -10 and R_recent_accZ < 10) :
+        print("[Result] 기역!!!!!!!!!!")
+
+    elif (R_recent_1st< 3 and R_recent_2nd < 3 and R_recent_3rd > 8 and R_recent_4th > 8 and R_recent_5th > 8 and
+            R_recent_accX < 10 and R_recent_accX > -30 and R_recent_accY > 70 and  R_recent_accZ > -20 and R_recent_accZ < 10) :
+        print("[Result] 니은!!!!!!!!!!")
+
+    elif (R_recent_1st > 5 and R_recent_2nd < 3 and R_recent_3rd < 3 and R_recent_4th > 8 and R_recent_5th > 5 and
+            R_recent_accX < 0 and R_recent_accX > -30 and R_recent_accY > 70 and  R_recent_accZ > -20 and R_recent_accZ < 10) :
+        print("[Result] 디귿!!!!!!!!!!")
+    else :
+        pass
 
 
 
