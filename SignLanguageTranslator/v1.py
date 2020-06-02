@@ -152,6 +152,16 @@ def send(data):
 
 # 수신부
 def receive(data):
+
+    #현재시간
+    fseconds = time.time()
+    stime = int(fseconds%60)
+    fseconds//=60
+    mtime = fseconds%60
+    fseconds//=60
+    htime = fseconds%24
+    htime=(htime+9)%24
+
     while True:
         ############### 예고없이 연결 끊겼을 때 재연결 가능하도록 ################
         try :
@@ -179,7 +189,7 @@ def receive(data):
             #  잘못 잘려진 라인은 버려지도록 길이 체크
             if len(line) > 10:
                 #  제대로 데이터 수신된 경우에만 화면에 출력
-                print(addr, " : ", line)
+                print(int(htime), "시", int(mtime), "분", stime, "초", " : ", line)
                 #  어느 손인지 나눠서 text 파일에 쓸 수 있도록 함수 호출
                 input_txt(line)
             #  잘못 잘려진 라인인 경우 그냥 버림
@@ -213,17 +223,19 @@ def input_txt(line):
             right_lstX.append(len(right_1st))
 
             if (len(right_1st) > 15):
-                check_gap(right_1st[-1], right_2ed[-1], right_3rd[-1], right_4th[-1], right_5th[-1],
+                check_gap_R(right_1st[-1], right_2ed[-1], right_3rd[-1], right_4th[-1], right_5th[-1],
                           right_accX[-1], right_accY[-1], right_accZ[-1], right_degX[-1], right_degY[-1], right_degZ[-1]
                           , right_accX[-2], right_accY[-2], right_accZ[-2], right_degX[-2], right_degY[-2],
                           right_degZ[-2], right_accX[-3], right_accY[-3], right_accZ[-3], right_degX[-3], right_degY[-3],
                           right_degZ[-3])
+                print("check_gap_R으로 진입\n")
 
 
         # 오른손 센서값 넣는 와중에 클라이언트가 강제 종료되면 다시 소켓 연결 대기
         except:
-            print("[ERROR] 오른손 형식 오류")
-            reconnect()
+            pass
+            # print("[ERROR] 오른손 형식 오류")
+            # reconnect()
 
     # 헤더가 'L'이면 왼손손에 정보 넣기
     elif ((recv_line.split(' ')[0]) == 'L'):
@@ -244,6 +256,7 @@ def input_txt(line):
             left_degY.append(int(recv_line.split(' ')[10]))
             left_degZ.append(int(recv_line.split(' ')[11]))
             left_lstX.append(len(left_1st))
+
         # 오른손 센서값 넣는 와중에 클라이언트가 강제 종료되면 다시 소켓 연결 대기
         except:
             print("[ERROR] 왼손 형식 오류")
@@ -258,7 +271,7 @@ def reconnect():
     # datasave 한 거 날려줘야 함
 
 # 동작 구간 판별을 위해 움직임 정도를 체크하는 함수
-def check_gap(R_recent_1st, R_recent_2nd, R_recent_3rd, R_recent_4th, R_recent_5th,
+def check_gap_R(R_recent_1st, R_recent_2nd, R_recent_3rd, R_recent_4th, R_recent_5th,
               R_recent_accX, R_recent_accY, R_recent_accZ, R_recent_degX, R_recent_degY, R_recent_degZ
               ,R_past_accX, R_past_accY, R_past_accZ, R_past_degX, R_past_degY, R_past_degZ
               ,R_ppast_accX, R_ppast_accY, R_ppast_accZ, R_ppast_degX, R_ppast_degY, R_ppast_degZ):
@@ -270,58 +283,80 @@ def check_gap(R_recent_1st, R_recent_2nd, R_recent_3rd, R_recent_4th, R_recent_5
     R_gap_right_DegY = abs(R_recent_degY-R_past_degY)
     R_gap_right_DegZ = abs(R_recent_degZ-R_past_degZ)
 
+    print(R_gap_right_AccX, R_gap_right_AccY, R_gap_right_AccZ, R_gap_right_DegX, R_gap_right_DegY, R_gap_right_DegZ)
+
     R_gap_past_right_AccX = abs(R_past_accX-R_ppast_accX)
     R_gap_past_right_AccY = abs(R_past_accY-R_ppast_accY)
     R_gap_past_right_AccZ = abs(R_past_accZ-R_ppast_accZ)
     R_gap_past_right_DegX = abs(R_past_degX-R_ppast_degX)
     R_gap_past_right_DegY = abs(R_past_degY-R_ppast_degY)
     R_gap_past_right_DegZ = abs(R_past_degZ-R_ppast_degZ)
+    print("움직임 정도 체크 완료\n")
 
     # 현재 가속도 값 변화량 체크
     if (R_gap_right_AccX < 10 and R_gap_right_AccY < 10 and R_gap_right_AccZ < 10):
-        noChangeAcc = True
-    else : noChangeAcc = False
-    print("[check] 현재 가속도 값 변화 : " + noChangeAcc)
+        print("어디가 문제야\n")
+        R_noChangeAcc = True
+        print("[check] 현재 가속도 값 변화 : ", str(R_noChangeAcc))
+
+    else :
+        R_noChangeAcc = False
+        print("[check] 현재 가속도 값 변화 : ", str(R_noChangeAcc))
 
     # 현재 기울기 값 변화량 체크
     if (R_gap_right_DegX < 10 and R_gap_right_DegY < 10 and R_gap_right_DegZ < 10):
-        noChangeDeg = True
-    else : noChangeDeg = False
-    print("[check] 현재 기울기 값 변화 : " + noChangeDeg)
+        R_noChangeDeg = True
+        print("[check] 현재 가속도 값 변화 : " + str(R_noChangeDeg))
+    else :
+        R_noChangeDeg = False
+        print("[check] 현재 기울기 값 변화 : " + str(R_noChangeDeg))
 
     # 지난 가속도 값 변화량 체크
     if (R_gap_past_right_AccX < 10 and R_gap_past_right_AccY < 10 and R_gap_past_right_AccZ < 10):
-        noChangeAcc_past = True
-    else : noChangeAcc_past = False
-    print("[check] 지난 가속도 값 변화 : " + noChangeAcc_past)
+        R_noChangeAcc_past = True
+        print("[check] 현재 가속도 값 변화 : " + str(R_noChangeAcc_past))
+    else :
+        R_noChangeAcc_past = False
+        print("[check] 지난 가속도 값 변화 : " + str(R_noChangeAcc_past))
 
     # 지난 기울기 값 변화량 체크
     if (R_gap_past_right_DegX < 10 and R_gap_past_right_DegY < 10 and R_gap_past_right_DegZ < 10):
-        noChangeDeg_past = True
-    else : noChangeDeg_past = False
-    print("[check] 지난 기울기 값 변화 : " + noChangeDeg_past)
+        R_noChangeDeg_past = True
+        print("[check] 지난 기울기 값 변화 : " + str(R_noChangeDeg_past))
+    else :
+        R_noChangeDeg_past = False
+        print("[check] 지난 기울기 값 변화 : " + str(R_noChangeDeg_past))
+
+    # # 만약 움직이다 멈춘 경우이면
+    # if(noChangeAcc == True and noChangeAcc_past == False and noChangeDeg == True and noChangeDeg_past == False):
+    #     match_Sign(R_recent_1st, R_recent_2nd, R_recent_3rd, R_recent_4th, R_recent_5th,
+    #                R_recent_accX, R_recent_accY, R_recent_accZ)
 
     # 만약 움직이다 멈춘 경우이면
-    if(noChangeAcc == True and noChangeAcc_past == False and noChangeDeg == True and noChangeDeg_past == False):
+    print(str(R_noChangeAcc), str(R_noChangeDeg) , "True, True이면 match_Sign시작\n")
+    if(R_noChangeAcc == True and R_noChangeDeg == True):
         match_Sign(R_recent_1st, R_recent_2nd, R_recent_3rd, R_recent_4th, R_recent_5th,
-                   R_recent_accX, R_recent_accY, R_recent_accZ, R_recent_degX, R_recent_degY, R_recent_degZ)
+                   R_recent_accX, R_recent_accY, R_recent_accZ)
 
 
 def match_Sign(R_recent_1st, R_recent_2nd, R_recent_3rd, R_recent_4th, R_recent_5th
-               ,R_recent_accX, R_recent_accY, R_recent_accZ, R_recent_degX, R_recent_degY, R_recent_degZ):
+               ,R_recent_accX, R_recent_accY, R_recent_accZ):
     print("[State] 오른손 지화 패턴 매칭 시작")
 
     if (R_recent_1st< 3 and R_recent_2nd < 3 and R_recent_3rd > 8 and R_recent_4th > 8 and R_recent_5th > 8 and
-            R_recent_accX < -70 and R_recent_accY > 0 and R_recent_accY < 20 and R_recent_accZ > -10 and R_recent_accZ < 10) :
+            R_recent_accX < -70 and 30 > R_recent_accY > -20 and 20 > R_recent_accZ > -20) :
         print("[Result] 기역!!!!!!!!!!")
+        conn.send("기역\n".encode('utf-8'))
 
     elif (R_recent_1st< 3 and R_recent_2nd < 3 and R_recent_3rd > 8 and R_recent_4th > 8 and R_recent_5th > 8 and
-            R_recent_accX < 10 and R_recent_accX > -30 and R_recent_accY > 70 and  R_recent_accZ > -20 and R_recent_accZ < 10) :
+            -30 < R_recent_accX < 10 and R_recent_accY > 70 and  10 > R_recent_accZ > -20) :
         print("[Result] 니은!!!!!!!!!!")
+        conn.send("니은\n".encode('utf-8'))
 
     elif (R_recent_1st > 5 and R_recent_2nd < 3 and R_recent_3rd < 3 and R_recent_4th > 8 and R_recent_5th > 5 and
-            R_recent_accX < 0 and R_recent_accX > -30 and R_recent_accY > 70 and  R_recent_accZ > -20 and R_recent_accZ < 10) :
+           -30 < R_recent_accX < 0 and R_recent_accY > 70 and  10 > R_recent_accZ > -20) :
         print("[Result] 디귿!!!!!!!!!!")
+        conn.send("디귿\n".encode('utf-8'))
     else :
         pass
 
@@ -331,6 +366,7 @@ def match_Sign(R_recent_1st, R_recent_2nd, R_recent_3rd, R_recent_4th, R_recent_
 def setSoket():
     global addr
     global svrsock
+    global conn
     # 소켓 객체를 생성합니다.
     # 주소 체계(address family)로 IPv4, 소켓 타입으로 TCP 사용합니다.
     svrsock=socket(AF_INET,SOCK_STREAM)
