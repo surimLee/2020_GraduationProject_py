@@ -79,6 +79,9 @@ global num_of_Null
 num_of_Null = 0
 R_Energy = 0
 
+global is_R_moving
+is_R_moving = []
+
 global index_x
 global index_y
 
@@ -220,6 +223,7 @@ def send(data):
 
 # 수신부
 def receive(data):
+    global num_of_Null
     #현재시간
     fseconds = time.time()
     stime = int(fseconds%60)
@@ -269,6 +273,7 @@ def receive(data):
 def input_txt(line):
     global index_x
     global index_y
+    global is_R_moving
     fR = open("saveDataR.txt", 'a')
     fL = open("saveDataL.txt", 'a')
     recv_line = line
@@ -301,9 +306,29 @@ def input_txt(line):
                 #               right_accZ[-3])
                 #     print("check_gap_R으로 진입\n")
 
-                if (len(right_1st) > 15):
-                    print(right_accX[-1], right_accY[-1], right_accZ[-1], right_accX[-2], right_accY[-2], right_accZ[-2])
-                    calculate_Energy(right_accX[-1], right_accY[-1], right_accZ[-1], right_accX[-2], right_accY[-2], right_accZ[-2])
+                # 실행하고 5초정도 후에
+                if (len(right_1st) > 7):
+                    R_Energy = calculate_Energy(right_accX[-1], right_accY[-1], right_accZ[-1], right_accX[-2], right_accY[-2], right_accZ[-2])
+
+                    # 현재 동작중이면
+                    if (R_Energy > 1000):
+                        is_R_moving.append(1)
+                        # print("동작중임")
+
+                        if (is_R_moving[-2] == 0):
+                            print("동작시작")
+                    else:
+                        is_R_moving.append(0)
+                        # print("동작중 아님")
+
+                        if(is_R_moving[-2] == 1):
+                            print("끝점 : ", right_1st[-1], right_2ed[-1], right_3rd[-1], right_4th[-1], right_5th[-1],
+                                  right_degX[-1], right_degY[-1], right_degZ[-1], right_accX[-1], right_accY[-1], right_accZ[-1])
+
+                            match_fingerLanguage(right_1st[-1], right_2ed[-1], right_3rd[-1], right_4th[-1], right_5th[-1],
+                                  right_degX[-1], right_degY[-1], right_degZ[-1], right_accX[-1], right_accY[-1], right_accZ[-1])
+                        else:
+                            pass
 
             # 오른손 센서값 넣는 와중에 클라이언트가 강제 종료되면 다시 소켓 연결 대기
             except:
@@ -335,6 +360,14 @@ def input_txt(line):
                 left_accZ.append(int(recv_line.split(' ')[11]))
                 left_lstX.append(len(left_1st))
 
+                # 실행하고 5초정도 후에
+                if (len(left_1st) > 7):
+                    L_Energy = calculate_Energy(left_degX[-1], left_degY[-1], left_accZ[-1], left_accX[-2], left_accY[-2], left_accZ[-2])
+
+                    # 현재 동작중이면
+                    if (L_Energy > 700):
+                        pass
+
             # 오른손 센서값 넣는 와중에 클라이언트가 강제 종료되면 다시 소켓 연결 대기
             except:
                 pass
@@ -346,8 +379,24 @@ def input_txt(line):
 # Energy 값 계산
 def calculate_Energy(recent_accX, recent_accY, recent_accZ, past_accX, past_accY, past_accZ) :
     Energy = ((past_accX-recent_accX)**2) + ((past_accY-recent_accY)**2) + ((past_accZ-recent_accZ)**2)
-    print("Energy : ", Energy)
+    return Energy
 
+def match_fingerLanguage(r_1st, r_2ed, r_3rd, r_4th, r_5th, r_degX, r_degY, r_degZ, r_accX, r_accY, r_accZ):
+    if (r_1st<3 and r_2ed<3 and r_3rd>7 and r_4th>7 and r_5th>7 and r_degX<-50 and r_degY>40 and 0<r_degZ<30):
+        conn.send("ㄱ\n".encode('utf-8'))
+        print("[Result] ㄱ")
+    elif (r_1st<3 and r_2ed<3 and r_3rd>7 and r_4th>7 and r_5th>7 and -20<r_degX<20 and 70<r_degY and -70<r_degZ<10):
+        conn.send("ㄴ\n".encode('utf-8'))
+        print("[Result] ㄴ")
+    elif (3<r_1st<10 and r_2ed<3 and r_3rd<3 and r_4th>5 and r_5th>7 and -25<r_degX<20 and 40<r_degY and -45<r_degZ<0):
+        conn.send("ㄷ\n".encode('utf-8'))
+        print("[Result] ㄷ")
+    elif (6<r_1st and r_2ed>6 and r_3rd>6 and r_4th>6 and r_5th>6 and -25<r_degX<30 and -30<r_degY<60 and 40<r_degZ):
+        conn.send("안녕하세요\n".encode('utf-8'))
+        print("[Result] 안녕하세요")
+
+    else:
+        pass
 
 
 
