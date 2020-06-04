@@ -312,7 +312,7 @@ def input_txt(line):
                     R_Energy = calculate_Energy(right_accX[-1], right_accY[-1], right_accZ[-1], right_accX[-2], right_accY[-2], right_accZ[-2])
 
                     # 현재 동작중이면
-                    if (R_Energy > 500):
+                    if (R_Energy > 300):
                         is_R_moving.append(1)
                         # print("동작중임")
 
@@ -327,7 +327,7 @@ def input_txt(line):
                                   right_degX[-1], right_degY[-1], right_degZ[-1], right_accX[-1], right_accY[-1], right_accZ[-1])
 
                             match_fingerLanguage(right_1st[-1], right_2ed[-1], right_3rd[-1], right_4th[-1], right_5th[-1],
-                                  right_degX[-1], right_degY[-1], right_degZ[-1])
+                                  right_degX[-1], right_degY[-1], right_degZ[-1], R_Energy)
                         else:
                             pass
 
@@ -398,98 +398,65 @@ def mark_degree(degree):
     else:
         return "O"
 
-def match_fingerLanguage(r_1st, r_2ed, r_3rd, r_4th, r_5th, r_degX, r_degY, r_degZ):
+def match_fingerLanguage(r_1st, r_2ed, r_3rd, r_4th, r_5th, r_degX, r_degY, r_degZ, r_Energy):
         global R_recent_char
-        mark_r_1st = mark_finger(r_1st)
-        mark_r_2ed = mark_finger(r_2ed)
-        mark_r_3rd = mark_finger(r_3rd)
-        mark_r_4th = mark_finger(r_4th)
-        mark_r_5th = mark_finger(r_5th)
-        mark_r_degX = mark_degree(r_degX)
-        mark_r_degY = mark_degree(r_degY)
-        mark_r_degZ = mark_degree(r_degZ)
-        print(mark_r_1st, mark_r_2ed, mark_r_3rd, mark_r_4th, mark_r_5th, mark_r_degX, mark_r_degY, mark_r_degZ)
-        if(mark_r_1st == 'X'):
-            if(mark_r_2ed == 'X' and mark_r_3rd=='O' and mark_r_4th=='O' and mark_r_5th=='O'):
-                if (mark_r_degX=='X' and mark_r_degY=='M' and mark_r_degZ=='M'):
+        mark_r_1st = r_1st
+        mark_r_2ed = r_2ed
+        mark_r_3rd = r_3rd
+        mark_r_4th = r_4th
+        mark_r_5th = r_5th
+        mark_r_degX = r_degX
+        mark_r_degY = r_degY
+        mark_r_degZ = r_degZ
+        print(mark_r_1st, mark_r_2ed, mark_r_3rd, mark_r_4th, mark_r_5th, mark_r_degX, mark_r_degY, mark_r_degZ, r_Energy)
+        if(mark_r_degX<-60 and mark_r_degY>-20 and mark_r_degZ>-20 ):
+            if(mark_r_1st<3 and mark_r_2ed <3 and mark_r_3rd>6 and mark_r_4th>7 and mark_r_5th>7 ):
+                if (R_recent_char=='ㄱ'):
+                    if (r_Energy > 7):
+                        conn.send("ㄱ\n".encode('utf-8'))
+                        print("[Result] ㄱ")
+                else:
                     conn.send("ㄱ\n".encode('utf-8'))
                     print("[Result] ㄱ")
-                elif (mark_r_degX=='M' and mark_r_degY=='O' and mark_r_degZ=='M'):
-                    if (R_recent_char == 'ㄴ'):
-                        pass
-                    else:
-                        R_recent_char = 'ㄴ'
+                    R_recent_char = 'ㄱ'
+        elif(mark_r_degX<20 and mark_r_degY>50 and mark_r_degZ<20 ):
+            if(mark_r_1st < 3 and mark_r_2ed < 4 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
+                if (R_recent_char == 'ㄴ'):
+                    if (r_Energy > 7):
                         conn.send("ㄴ\n".encode('utf-8'))
                         print("[Result] ㄴ")
-        elif(mark_r_3rd=='X' and mark_r_4th=='X' and mark_r_5th=='X'):
-            if(mark_r_2ed == 'X' and mark_r_degX=='O'and mark_r_degY=='M' and mark_r_degZ=='M'):
-                if (R_recent_char == 'ㅂ'):
-                    pass
                 else:
-                    R_recent_char = 'ㅂ'
-                    conn.send("ㅂ\n".encode('utf-8'))
-                    print("[Result] ㅂ")
-            elif(mark_r_2ed == 'M' and mark_r_degX=='O'and mark_r_degY=='M' and mark_r_degZ=='M'):
-                conn.send("ㅇ\n".encode('utf-8'))
-                print("[Result] ㅇ")
-        elif(mark_r_degX=='X'):
-            if(mark_r_degY=='M' and mark_r_degZ=='M' and mark_r_2ed == 'X' and mark_r_3rd=='X'):
-                if (R_recent_char == 'ㅅ'):
-                    pass
-                else:
-                    R_recent_char = 'ㅅ'
-                    conn.send("ㅅ\n".encode('utf-8'))
-                    print("[Result] ㅅ")
-        elif(mark_r_1st == 'O'):
-            if(mark_r_2ed == 'O' and mark_r_3rd=='O' and mark_r_4th=='O' and mark_r_5th=='O'):
-                if(mark_r_degX=='O'):
-                    if (R_recent_char == 'ㅍ'):
-                        pass
-                    else:
-                        R_recent_char = 'ㅍ'
-                        conn.send("ㅍ\n".encode('utf-8'))
-                        print("[Result] ㅍ")
-            elif (mark_r_2ed == 'X' and mark_r_3rd == 'X' and mark_r_4th == 'X' and mark_r_5th == 'O'):
-                if (R_recent_char == 'ㄹ'):
-                    pass
-                else:
-                    R_recent_char = 'ㄹ'
-                    conn.send("ㄹ\n".encode('utf-8'))
-                    print("[Result] ㄹ")
-            elif(mark_r_2ed == 'X' and mark_r_3rd == 'X' and mark_r_4th == 'O' and mark_r_5th == 'O'):
-                if (mark_r_degX == 'M' and mark_r_degY == 'O' and mark_r_degZ == 'M'):
-                    if (R_recent_char == 'ㄷ'):
-                        pass
-                    else:
-                        R_recent_char = 'ㄷ'
+                    conn.send("ㄴ\n".encode('utf-8'))
+                    print("[Result] ㄴ")
+                    R_recent_char = 'ㄴ'
+            elif(mark_r_1st > 3 and mark_r_2ed < 4 and mark_r_3rd < 4 and mark_r_4th > 7 and mark_r_5th > 5):
+                if (R_recent_char == 'ㄷ'):
+                    if (r_Energy > 7):
                         conn.send("ㄷ\n".encode('utf-8'))
                         print("[Result] ㄷ")
-        elif(mark_r_1st=='M'):
-            if(mark_r_3rd=='O' and mark_r_4th=='O' and mark_r_5th=='O'):
+                else:
+                    conn.send("ㄷ\n".encode('utf-8'))
+                    print("[Result] ㄷ")
+                    R_recent_char = 'ㄷ'
+            elif(mark_r_1st > 3 and mark_r_2ed < 4 and mark_r_3rd < 4 and mark_r_4th <4 and mark_r_5th > 5):
+                if (R_recent_char == 'ㄹ'):
+                    if (r_Energy > 7):
+                        conn.send("ㄹ\n".encode('utf-8'))
+                        print("[Result] ㄹ")
+                else:
+                    conn.send("ㄹ\n".encode('utf-8'))
+                    print("[Result] ㄹ")
+                    R_recent_char = 'ㄹ'
+        elif (mark_r_degX > 55 and -40<mark_r_degY < 40 and -10<mark_r_degZ < 50):
+            if (4<mark_r_1st and 1<mark_r_2ed < 8 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
                 if (R_recent_char == 'ㅁ'):
-                    pass
+                    if (r_Energy > 7):
+                        conn.send("ㅁ\n".encode('utf-8'))
+                        print("[Result] ㅁ")
                 else:
-                    R_recent_char = 'ㅁ'
                     conn.send("ㅁ\n".encode('utf-8'))
                     print("[Result] ㅁ")
-            elif(mark_r_2ed == 'X' and mark_r_3rd=='X' and mark_r_4th=='X' and mark_r_5th=='X'):
-                if(mark_r_degX=='O' and mark_r_degY=='M' and mark_r_degZ=='M'):
-                    if (R_recent_char == 'ㅂ'):
-                        pass
-                    else:
-                        R_recent_char = 'ㅂ'
-                        conn.send("ㅂ\n".encode('utf-8'))
-                        print("[Result] ㅂ")
-        elif(mark_r_1st=='M' or mark_r_1st=='O'):
-            if(mark_r_degX=='O' and mark_r_3rd=='O' and mark_r_4th=='O' and mark_r_5th=='O'):
-                if (R_recent_char=='ㅁ'):
-                    pass
-                else:
-                    R_recent_char = 'ㅁ'
-                    conn.send("ㅁ\n".encode('utf-8'))
-                    print("[Result] ㅁ")
-        else:
-            pass
+                    R_recent_char='ㅁ'
 
     # if (r_1st<3 and r_2ed<3 and r_3rd>7 and r_4th>7 and r_5th>7 and r_degX<-50 and r_degY>40 and 0<r_degZ<30):
 #     #     conn.send("ㄱ\n".encode('utf-8'))
