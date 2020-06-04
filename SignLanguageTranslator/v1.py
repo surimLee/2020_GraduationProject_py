@@ -78,7 +78,8 @@ check_header = ''
 global num_of_Null
 num_of_Null = 0
 R_Energy = 0
-
+global R_recent_char
+R_recent_char=''
 global is_R_moving
 is_R_moving = []
 
@@ -311,7 +312,7 @@ def input_txt(line):
                     R_Energy = calculate_Energy(right_accX[-1], right_accY[-1], right_accZ[-1], right_accX[-2], right_accY[-2], right_accZ[-2])
 
                     # 현재 동작중이면
-                    if (R_Energy > 1000):
+                    if (R_Energy > 500):
                         is_R_moving.append(1)
                         # print("동작중임")
 
@@ -321,12 +322,12 @@ def input_txt(line):
                         is_R_moving.append(0)
                         # print("동작중 아님")
 
-                        if(is_R_moving[-2] == 1):
+                        if(is_R_moving[-2] == 1 ):
                             print("끝점 : ", right_1st[-1], right_2ed[-1], right_3rd[-1], right_4th[-1], right_5th[-1],
                                   right_degX[-1], right_degY[-1], right_degZ[-1], right_accX[-1], right_accY[-1], right_accZ[-1])
 
                             match_fingerLanguage(right_1st[-1], right_2ed[-1], right_3rd[-1], right_4th[-1], right_5th[-1],
-                                  right_degX[-1], right_degY[-1], right_degZ[-1], right_accX[-1], right_accY[-1], right_accZ[-1])
+                                  right_degX[-1], right_degY[-1], right_degZ[-1])
                         else:
                             pass
 
@@ -381,22 +382,129 @@ def calculate_Energy(recent_accX, recent_accY, recent_accZ, past_accX, past_accY
     Energy = ((past_accX-recent_accX)**2) + ((past_accY-recent_accY)**2) + ((past_accZ-recent_accZ)**2)
     return Energy
 
-def match_fingerLanguage(r_1st, r_2ed, r_3rd, r_4th, r_5th, r_degX, r_degY, r_degZ, r_accX, r_accY, r_accZ):
-    if (r_1st<3 and r_2ed<3 and r_3rd>7 and r_4th>7 and r_5th>7 and r_degX<-50 and r_degY>40 and 0<r_degZ<30):
-        conn.send("ㄱ\n".encode('utf-8'))
-        print("[Result] ㄱ")
-    elif (r_1st<3 and r_2ed<3 and r_3rd>7 and r_4th>7 and r_5th>7 and -20<r_degX<20 and 70<r_degY and -70<r_degZ<10):
-        conn.send("ㄴ\n".encode('utf-8'))
-        print("[Result] ㄴ")
-    elif (3<r_1st<10 and r_2ed<3 and r_3rd<3 and r_4th>5 and r_5th>7 and -25<r_degX<20 and 40<r_degY and -45<r_degZ<0):
-        conn.send("ㄷ\n".encode('utf-8'))
-        print("[Result] ㄷ")
-    elif (6<r_1st and r_2ed>6 and r_3rd>6 and r_4th>6 and r_5th>6 and -25<r_degX<30 and -30<r_degY<60 and 40<r_degZ):
-        conn.send("안녕하세요\n".encode('utf-8'))
-        print("[Result] 안녕하세요")
-
+def mark_finger(finger):
+    if (finger < 4):
+        return 'X'
+    elif (3 < finger < 8):
+        return 'M'
     else:
-        pass
+        return 'O'
+
+def mark_degree(degree):
+    if (degree <-50):
+        return "X"
+    elif (-51<degree<50):
+        return 'M'
+    else:
+        return "O"
+
+def match_fingerLanguage(r_1st, r_2ed, r_3rd, r_4th, r_5th, r_degX, r_degY, r_degZ):
+        global R_recent_char
+        mark_r_1st = mark_finger(r_1st)
+        mark_r_2ed = mark_finger(r_2ed)
+        mark_r_3rd = mark_finger(r_3rd)
+        mark_r_4th = mark_finger(r_4th)
+        mark_r_5th = mark_finger(r_5th)
+        mark_r_degX = mark_degree(r_degX)
+        mark_r_degY = mark_degree(r_degY)
+        mark_r_degZ = mark_degree(r_degZ)
+        print(mark_r_1st, mark_r_2ed, mark_r_3rd, mark_r_4th, mark_r_5th, mark_r_degX, mark_r_degY, mark_r_degZ)
+        if(mark_r_1st == 'X'):
+            if(mark_r_2ed == 'X' and mark_r_3rd=='O' and mark_r_4th=='O' and mark_r_5th=='O'):
+                if (mark_r_degX=='X' and mark_r_degY=='M' and mark_r_degZ=='M'):
+                    conn.send("ㄱ\n".encode('utf-8'))
+                    print("[Result] ㄱ")
+                elif (mark_r_degX=='M' and mark_r_degY=='O' and mark_r_degZ=='M'):
+                    if (R_recent_char == 'ㄴ'):
+                        pass
+                    else:
+                        R_recent_char = 'ㄴ'
+                        conn.send("ㄴ\n".encode('utf-8'))
+                        print("[Result] ㄴ")
+        elif(mark_r_3rd=='X' and mark_r_4th=='X' and mark_r_5th=='X'):
+            if(mark_r_2ed == 'X' and mark_r_degX=='O'and mark_r_degY=='M' and mark_r_degZ=='M'):
+                if (R_recent_char == 'ㅂ'):
+                    pass
+                else:
+                    R_recent_char = 'ㅂ'
+                    conn.send("ㅂ\n".encode('utf-8'))
+                    print("[Result] ㅂ")
+            elif(mark_r_2ed == 'M' and mark_r_degX=='O'and mark_r_degY=='M' and mark_r_degZ=='M'):
+                conn.send("ㅇ\n".encode('utf-8'))
+                print("[Result] ㅇ")
+        elif(mark_r_degX=='X'):
+            if(mark_r_degY=='M' and mark_r_degZ=='M' and mark_r_2ed == 'X' and mark_r_3rd=='X'):
+                if (R_recent_char == 'ㅅ'):
+                    pass
+                else:
+                    R_recent_char = 'ㅅ'
+                    conn.send("ㅅ\n".encode('utf-8'))
+                    print("[Result] ㅅ")
+        elif(mark_r_1st == 'O'):
+            if(mark_r_2ed == 'O' and mark_r_3rd=='O' and mark_r_4th=='O' and mark_r_5th=='O'):
+                if(mark_r_degX=='O'):
+                    if (R_recent_char == 'ㅍ'):
+                        pass
+                    else:
+                        R_recent_char = 'ㅍ'
+                        conn.send("ㅍ\n".encode('utf-8'))
+                        print("[Result] ㅍ")
+            elif (mark_r_2ed == 'X' and mark_r_3rd == 'X' and mark_r_4th == 'X' and mark_r_5th == 'O'):
+                if (R_recent_char == 'ㄹ'):
+                    pass
+                else:
+                    R_recent_char = 'ㄹ'
+                    conn.send("ㄹ\n".encode('utf-8'))
+                    print("[Result] ㄹ")
+            elif(mark_r_2ed == 'X' and mark_r_3rd == 'X' and mark_r_4th == 'O' and mark_r_5th == 'O'):
+                if (mark_r_degX == 'M' and mark_r_degY == 'O' and mark_r_degZ == 'M'):
+                    if (R_recent_char == 'ㄷ'):
+                        pass
+                    else:
+                        R_recent_char = 'ㄷ'
+                        conn.send("ㄷ\n".encode('utf-8'))
+                        print("[Result] ㄷ")
+        elif(mark_r_1st=='M'):
+            if(mark_r_3rd=='O' and mark_r_4th=='O' and mark_r_5th=='O'):
+                if (R_recent_char == 'ㅁ'):
+                    pass
+                else:
+                    R_recent_char = 'ㅁ'
+                    conn.send("ㅁ\n".encode('utf-8'))
+                    print("[Result] ㅁ")
+            elif(mark_r_2ed == 'X' and mark_r_3rd=='X' and mark_r_4th=='X' and mark_r_5th=='X'):
+                if(mark_r_degX=='O' and mark_r_degY=='M' and mark_r_degZ=='M'):
+                    if (R_recent_char == 'ㅂ'):
+                        pass
+                    else:
+                        R_recent_char = 'ㅂ'
+                        conn.send("ㅂ\n".encode('utf-8'))
+                        print("[Result] ㅂ")
+        elif(mark_r_1st=='M' or mark_r_1st=='O'):
+            if(mark_r_degX=='O' and mark_r_3rd=='O' and mark_r_4th=='O' and mark_r_5th=='O'):
+                if (R_recent_char=='ㅁ'):
+                    pass
+                else:
+                    R_recent_char = 'ㅁ'
+                    conn.send("ㅁ\n".encode('utf-8'))
+                    print("[Result] ㅁ")
+        else:
+            pass
+
+    # if (r_1st<3 and r_2ed<3 and r_3rd>7 and r_4th>7 and r_5th>7 and r_degX<-50 and r_degY>40 and 0<r_degZ<30):
+#     #     conn.send("ㄱ\n".encode('utf-8'))
+#     #     print("[Result] ㄱ")
+#     # elif (r_1st<3 and r_2ed<3 and r_3rd>7 and r_4th>7 and r_5th>7 and -20<r_degX<20 and 70<r_degY and -70<r_degZ<10):
+#     #     conn.send("ㄴ\n".encode('utf-8'))
+#     #     print("[Result] ㄴ")
+#     # elif (3<r_1st<10 and r_2ed<3 and r_3rd<3 and r_4th>5 and r_5th>7 and -25<r_degX<20 and 40<r_degY and -45<r_degZ<0):
+#     #     conn.send("ㄷ\n".encode('utf-8'))
+#     #     print("[Result] ㄷ")
+#     # elif (6<r_1st and r_2ed>6 and r_3rd>6 and r_4th>6 and r_5th>6 and -25<r_degX<30 and -30<r_degY<60 and 40<r_degZ):
+#     #     conn.send("안녕하세요\n".encode('utf-8'))
+#     #     print("[Result] 안녕하세요")
+#     # else:
+#     #     pass
 
 
 
