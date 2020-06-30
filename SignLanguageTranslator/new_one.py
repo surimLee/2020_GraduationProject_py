@@ -484,6 +484,15 @@ def match_fingerLanguage(index,r_Energy):
                     conn.send("ㅠ\n".encode('utf-8'))
                     print("[Result] ㅠ")
                     R_recent_char = 'ㅠ'
+            elif (mark_r_1st > 5 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
+                if (R_recent_char == 'ㅟ'):
+                    if (r_Energy > 8):
+                        conn.send("ㅟ\n".encode('utf-8'))
+                        print("[Result] ㅟ")
+                else:
+                    conn.send("ㅟ\n".encode('utf-8'))
+                    print("[Result] ㅟ")
+                    R_recent_char = 'ㅟ'
         elif(mark_r_degX<10 and mark_r_degY>60 and mark_r_degZ<20 ):
             if(mark_r_1st < 3 and mark_r_2ed < 4 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
                 if (R_recent_char == 'ㄴ'):
@@ -526,6 +535,15 @@ def match_fingerLanguage(index,r_Energy):
                 conn.send("ㅌ\n".encode('utf-8'))
                 print("[Result] ㅌ")
                 R_recent_char = 'ㅌ'
+            elif (mark_r_1st > 5 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
+                if (R_recent_char == 'ㅢ'):
+                    if (r_Energy > 8):
+                        conn.send("ㅢ\n".encode('utf-8'))
+                        print("[Result] ㅢ")
+                else:
+                    conn.send("ㅢ\n".encode('utf-8'))
+                    print("[Result] ㅢ")
+                    R_recent_char = 'ㅢ'
         elif ( -20 < mark_r_degX < 50 and 40 < mark_r_degY and mark_r_degZ < 20):
             if (4>mark_r_1st and 5<mark_r_2ed and mark_r_3rd>7 and mark_r_4th>7 and mark_r_5th>7):
                 conn.send("ㅎ\n".encode('utf-8'))
@@ -534,7 +552,7 @@ def match_fingerLanguage(index,r_Energy):
             if (mark_r_1st > 5 and mark_r_2ed < 4 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
                 if (R_recent_char == 'ㅓ'):
                     if (r_Energy > 15):
-                        conn.send("ㅕ\n".encode('utf-8'))
+                        conn.send("ㅓ\n".encode('utf-8'))
                         print("[Result] ㅓ")
                 else:
                         conn.send("ㅓ\n".encode('utf-8'))
@@ -549,6 +567,24 @@ def match_fingerLanguage(index,r_Energy):
                         conn.send("ㅕ\n".encode('utf-8'))
                         print("[Result] ㅕ")
                         R_recent_char = 'ㅕ'
+            elif (mark_r_1st > 5 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
+                if (R_recent_char == 'ㅔ'):
+                    if (r_Energy > 8):
+                        conn.send("ㅔ\n".encode('utf-8'))
+                        print("[Result] ㅔ")
+                else:
+                    conn.send("ㅔ\n".encode('utf-8'))
+                    print("[Result] ㅔ")
+                    R_recent_char = 'ㅔ'
+            elif (9>mark_r_1st >3 and mark_r_2ed < 3 and mark_r_3rd <3 and mark_r_4th > 7 and mark_r_5th < 3):
+                if (R_recent_char == 'ㅖ'):
+                    if (r_Energy > 15):
+                        conn.send("ㅖ\n".encode('utf-8'))
+                        print("[Result] ㅖ")
+                else:
+                        conn.send("ㅖ\n".encode('utf-8'))
+                        print("[Result] ㅖ")
+                        R_recent_char = 'ㅖ'
 
         elif (mark_r_degX > 55 and -40<mark_r_degY < 60 and -10<mark_r_degZ < 55):
             if (4<mark_r_1st and 1<mark_r_2ed < 8 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
@@ -596,6 +632,15 @@ def match_fingerLanguage(index,r_Energy):
                     conn.send("ㅣ\n".encode('utf-8'))
                     print("[Result] ㅣ")
                     R_recent_char = 'ㅣ'
+            elif (mark_r_1st > 5 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
+                if (R_recent_char == 'ㅐ'):
+                    if (r_Energy > 8):
+                        conn.send("ㅐ\n".encode('utf-8'))
+                        print("[Result] ㅐ")
+                else:
+                    conn.send("ㅐ\n".encode('utf-8'))
+                    print("[Result] ㅐ")
+                    R_recent_char = 'ㅐ'
             elif (5<mark_r_1st and mark_r_2ed < 4 and mark_r_3rd >6 and mark_r_4th > 6 and mark_r_5th >6):
                 if (R_recent_char == 'ㅏ'):
                     if (r_Energy > 10):
@@ -614,6 +659,15 @@ def match_fingerLanguage(index,r_Energy):
                     conn.send("ㅑ\n".encode('utf-8'))
                     print("[Result] ㅑ")
                     R_recent_char='ㅑ'
+            elif (9>mark_r_1st >3 and mark_r_2ed < 3 and mark_r_3rd <3 and mark_r_4th > 7 and mark_r_5th < 3):
+                if (R_recent_char == 'ㅒ'):
+                    if (r_Energy > 15):
+                        conn.send("ㅒ\n".encode('utf-8'))
+                        print("[Result] ㅒ")
+                else:
+                        conn.send("ㅒ\n".encode('utf-8'))
+                        print("[Result] ㅒ")
+                        R_recent_char = 'ㅒ'
 
         elif (mark_r_degX > 55 and -40<mark_r_degY < 60 and mark_r_degZ < 0):
             if (4<mark_r_1st<9 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
@@ -634,6 +688,15 @@ def match_fingerLanguage(index,r_Energy):
                     conn.send("ㅛ\n".encode('utf-8'))
                     print("[Result] ㅛ")
                     R_recent_char='ㅛ'
+            elif (mark_r_1st > 5 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
+                if (R_recent_char == 'ㅚ'):
+                    if (r_Energy > 8):
+                        conn.send("ㅚ\n".encode('utf-8'))
+                        print("[Result] ㅚ")
+                else:
+                    conn.send("ㅚ\n".encode('utf-8'))
+                    print("[Result] ㅚ")
+                    R_recent_char = 'ㅚ'
 
     # if (r_1st<3 and r_2ed<3 and r_3rd>7 and r_4th>7 and r_5th>7 and r_degX<-50 and r_degY>40 and 0<r_degZ<30):
 #     #     conn.send("ㄱ\n".encode('utf-8'))
