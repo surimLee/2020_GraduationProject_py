@@ -430,7 +430,7 @@ def match_fingerLanguage(index,r_Energy):
                     conn.send("ㄱ\n".encode('utf-8'))
                     print("[Result] ㄱ")
                     R_recent_char = 'ㄱ'
-            if (mark_r_1st > 8 and mark_r_2ed < 3 and mark_r_3rd < 3 and mark_r_4th > 8 and mark_r_5th > 8):
+            if (mark_r_1st > 7 and mark_r_2ed < 3 and mark_r_3rd < 3 and mark_r_4th > 8 and mark_r_5th > 8):
                 if (R_recent_char == 'ㅅ'):
                     if (r_Energy > 10):
                         conn.send("ㅅ\n".encode('utf-8'))
@@ -503,7 +503,7 @@ def match_fingerLanguage(index,r_Energy):
                     conn.send("ㄴ\n".encode('utf-8'))
                     print("[Result] ㄴ")
                     R_recent_char = 'ㄴ'
-            elif(mark_r_1st > 3 and mark_r_2ed < 4 and mark_r_3rd < 4 and mark_r_4th > 7 and mark_r_5th > 5):
+            elif(mark_r_1st > 3 and mark_r_2ed < 4 and mark_r_3rd < 4 and mark_r_4th > 7 and mark_r_5th > 5 and -8>mark_r_degX):
                 if (R_recent_char == 'ㄷ'):
                     if (r_Energy > 8):
                         conn.send("ㄷ\n".encode('utf-8'))
@@ -544,7 +544,7 @@ def match_fingerLanguage(index,r_Energy):
                     conn.send("ㅢ\n".encode('utf-8'))
                     print("[Result] ㅢ")
                     R_recent_char = 'ㅢ'
-        elif ( -20 < mark_r_degX < 50 and 40 < mark_r_degY and mark_r_degZ < 20):
+        if ( -20 < mark_r_degX < 50 and 40 < mark_r_degY and mark_r_degZ < 20):
             if (4>mark_r_1st and 5<mark_r_2ed and mark_r_3rd>7 and mark_r_4th>7 and mark_r_5th>7):
                 conn.send("ㅎ\n".encode('utf-8'))
                 print("[Result] ㅎ")
@@ -558,7 +558,7 @@ def match_fingerLanguage(index,r_Energy):
                         conn.send("ㅓ\n".encode('utf-8'))
                         print("[Result] ㅓ")
                         R_recent_char = 'ㅓ'
-            if (mark_r_1st > 5 and mark_r_2ed < 4 and mark_r_3rd < 4 and mark_r_4th > 7 and mark_r_5th > 7):
+            elif (mark_r_1st > 4 and mark_r_2ed < 3 and mark_r_3rd < 3 and mark_r_4th > 7 and mark_r_5th > 7 and -8<mark_r_degX <10):
                 if (R_recent_char == 'ㅕ'):
                     if (r_Energy > 15):
                         conn.send("ㅕ\n".encode('utf-8'))
