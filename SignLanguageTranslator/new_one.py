@@ -325,7 +325,7 @@ def input_txt(line):
                         # print("동작중 아님")
 
                         if(is_R_moving[-2] == 1 ):
-                            print("끝점 : ", right_1st[-1], right_2ed[-1], right_3rd[-1], right_4th[-1], right_5th[-1], right_degX[-1], right_degY[-1], right_degZ[-1], right_accX[-1], right_accY[-1], right_accZ[-1], R_Energy)
+                            # print("끝점 : ", right_1st[-1], right_2ed[-1], right_3rd[-1], right_4th[-1], right_5th[-1], right_degX[-1], right_degY[-1], right_degZ[-1], right_accX[-1], right_accY[-1], right_accZ[-1], R_Energy)
                             match_fingerLanguage(right_lstX[-1]-1, R_Energy)
                         else:
                             pass
@@ -362,11 +362,12 @@ def input_txt(line):
 
                 # 실행하고 5초정도 후에
                 if (len(left_1st) > 7):
-                    L_Energy = calculate_Energy(left_degX[-1], left_degY[-1], left_accZ[-1], left_accX[-2], left_accY[-2], left_accZ[-2])
+                    global L_Energy
+                    L_Energy = calculate_Energy(left_accX[-1], left_accY[-1], left_accZ[-1], left_accX[-2], left_accY[-2], left_accZ[-2])
 
-                    # 현재 동작중이면
-                    if (L_Energy > 400):
-                        pass
+                    # # 현재 동작중이면
+                    # if (L_Energy > 400):
+                    #     pass
 
             # 오른손 센서값 넣는 와중에 클라이언트가 강제 종료되면 다시 소켓 연결 대기
             except:
@@ -408,6 +409,20 @@ def match_fingerLanguage(index,r_Energy):
         global right_degX
         global right_degY
         global right_degZ
+        global right_accX
+        global right_accY
+        global right_accZ
+        global left_1st
+        global left_2ed
+        global left_3rd
+        global left_4th
+        global left_5th
+        global left_degX
+        global left_degY
+        global left_degZ
+        global left_accX
+        global left_accY
+        global left_accZ
 
         mark_r_1st = right_1st[index]
         mark_r_2ed = right_2ed[index]
@@ -417,301 +432,335 @@ def match_fingerLanguage(index,r_Energy):
         mark_r_degX = right_degX[index]
         mark_r_degY = right_degY[index]
         mark_r_degZ = right_degZ[index]
+        mark_r_accX = right_accX[index]
+        mark_r_accY = right_accY[index]
+        mark_r_accZ = right_accZ[index]
 
-        print("match_fingerLanguage", mark_r_1st, mark_r_2ed, mark_r_3rd, mark_r_4th, mark_r_5th, mark_r_degX, mark_r_degY, mark_r_degZ, r_Energy)
+        mark_l_1st = left_1st[index]
+        mark_l_2ed = left_2ed[index]
+        mark_l_3rd = left_3rd[index]
+        mark_l_4th = left_4th[index]
+        mark_l_5th = left_5th[index]
+        mark_l_degX = left_degX[index]
+        mark_l_degY = left_degY[index]
+        mark_l_degZ = left_degZ[index]
+        mark_l_accX = left_accX[index]
+        mark_l_accY = left_accY[index]
+        mark_l_accZ = left_accZ[index]
 
-        if(mark_r_degX<-60 and mark_r_degY>-20 and mark_r_degZ>-20 ):
-            if(mark_r_1st<3 and mark_r_2ed <3 and mark_r_3rd>6 and mark_r_4th>7 and mark_r_5th>7 ):
-                if (R_recent_char=='ㄱ'):
-                    if (r_Energy > 7):
+
+        print("오른손 끝점 : ", mark_r_1st, mark_r_2ed, mark_r_3rd, mark_r_4th, mark_r_5th, mark_r_degX, mark_r_degY, mark_r_degZ, mark_r_accX, mark_r_accY, mark_r_accZ, r_Energy)
+        print("왼손 끝점 : ", mark_l_1st, mark_l_2ed, mark_l_3rd, mark_l_4th, mark_l_5th, mark_l_degX,
+              mark_l_degY, mark_l_degZ, mark_l_accX, mark_l_accY, mark_l_accZ, L_Energy)
+
+        if (L_Energy <5): # 왼손을 안 움직이고 = 지화
+            if(mark_r_degX<-60 and mark_r_degY>-20 and mark_r_degZ>-20 ):
+                if(mark_r_1st<3 and mark_r_2ed <3 and mark_r_3rd>6 and mark_r_4th>7 and mark_r_5th>7 ):
+                    if (R_recent_char=='ㄱ'):
+                        if (r_Energy > 7):
+                            conn.send("ㄱ\n".encode('utf-8'))
+                            print("[Result] ㄱ")
+                    else:
                         conn.send("ㄱ\n".encode('utf-8'))
                         print("[Result] ㄱ")
-                else:
-                    conn.send("ㄱ\n".encode('utf-8'))
-                    print("[Result] ㄱ")
-                    R_recent_char = 'ㄱ'
-            if (mark_r_1st > 7 and mark_r_2ed < 3 and mark_r_3rd < 3 and mark_r_4th > 8 and mark_r_5th > 8):
-                if (R_recent_char == 'ㅅ'):
-                    if (r_Energy > 10):
+                        R_recent_char = 'ㄱ'
+                if (mark_r_1st > 7 and mark_r_2ed < 3 and mark_r_3rd < 3 and mark_r_4th > 8 and mark_r_5th > 8):
+                    if (R_recent_char == 'ㅅ'):
+                        if (r_Energy > 10):
+                            conn.send("ㅅ\n".encode('utf-8'))
+                            print("[Result] ㅅ")
+                    else:
                         conn.send("ㅅ\n".encode('utf-8'))
                         print("[Result] ㅅ")
-                else:
-                    conn.send("ㅅ\n".encode('utf-8'))
-                    print("[Result] ㅅ")
-                    R_recent_char = 'ㅅ'
-            if (mark_r_1st < 3 and mark_r_2ed < 3 and mark_r_3rd < 3 and mark_r_4th > 6 and mark_r_5th > 6):
-                if (R_recent_char == 'ㅈ'):
-                    if (r_Energy > 10):
+                        R_recent_char = 'ㅅ'
+                if (mark_r_1st < 3 and mark_r_2ed < 3 and mark_r_3rd < 3 and mark_r_4th > 6 and mark_r_5th > 6):
+                    if (R_recent_char == 'ㅈ'):
+                        if (r_Energy > 10):
+                            conn.send("ㅈ\n".encode('utf-8'))
+                            print("[Result] ㅈ")
+                    else:
                         conn.send("ㅈ\n".encode('utf-8'))
                         print("[Result] ㅈ")
-                else:
-                    conn.send("ㅈ\n".encode('utf-8'))
-                    print("[Result] ㅈ")
-                    R_recent_char = 'ㅈ'
-            if (mark_r_1st < 3 and mark_r_2ed > 4 and mark_r_3rd < 3 and mark_r_4th > 7 and mark_r_5th > 6):
-                if (R_recent_char == 'ㅋ'):
-                    if (r_Energy > 10):
+                        R_recent_char = 'ㅈ'
+                if (mark_r_1st < 3 and mark_r_2ed > 4 and mark_r_3rd < 3 and mark_r_4th > 7 and mark_r_5th > 6):
+                    if (R_recent_char == 'ㅋ'):
+                        if (r_Energy > 15):
+                            conn.send("ㅋ\n".encode('utf-8'))
+                            print("[Result] ㅋ")
+                    else:
                         conn.send("ㅋ\n".encode('utf-8'))
                         print("[Result] ㅋ")
-                else:
-                    conn.send("ㅋ\n".encode('utf-8'))
-                    print("[Result] ㅋ")
-                    R_recent_char = 'ㅋ'
-            if (mark_r_1st < 3 and mark_r_2ed < 3 and mark_r_3rd < 3 and mark_r_4th < 3 and mark_r_5th > 5):
-                if (R_recent_char == 'ㅊ'):
-                    if (r_Energy > 10):
+                        R_recent_char = 'ㅋ'
+                if (mark_r_1st < 3 and mark_r_2ed < 3 and mark_r_3rd < 3 and mark_r_4th < 3 and mark_r_5th > 5):
+                    if (R_recent_char == 'ㅊ'):
+                        if (r_Energy > 10):
+                            conn.send("ㅊ\n".encode('utf-8'))
+                            print("[Result] ㅊ")
+                    else:
                         conn.send("ㅊ\n".encode('utf-8'))
                         print("[Result] ㅊ")
-                else:
-                    conn.send("ㅊ\n".encode('utf-8'))
-                    print("[Result] ㅊ")
-                    R_recent_char = 'ㅊ'
-            if (3 < mark_r_1st < 8 and mark_r_2ed < 3 and 5<mark_r_3rd and mark_r_4th > 7 and mark_r_5th > 7):
-                if (R_recent_char == 'ㅜ'):
-                    if (r_Energy > 10):
+                        R_recent_char = 'ㅊ'
+                if (3 < mark_r_1st < 8 and mark_r_2ed < 3 and 5<mark_r_3rd and mark_r_4th > 7 and mark_r_5th > 7):
+                    if (R_recent_char == 'ㅜ'):
+                        if (r_Energy > 10):
+                            conn.send("ㅜ\n".encode('utf-8'))
+                            print("[Result] ㅜ")
+                    else:
                         conn.send("ㅜ\n".encode('utf-8'))
                         print("[Result] ㅜ")
-                else:
-                    conn.send("ㅜ\n".encode('utf-8'))
-                    print("[Result] ㅜ")
-                    R_recent_char = 'ㅜ'
-            if (7>mark_r_1st > 2 and mark_r_2ed < 3 and mark_r_3rd < 3 and mark_r_4th > 7 and 9>mark_r_5th > 4):
-                if (R_recent_char == 'ㅠ'):
-                    if (r_Energy > 10):
+                        R_recent_char = 'ㅜ'
+                if (7>mark_r_1st > 2 and mark_r_2ed < 3 and mark_r_3rd < 3 and mark_r_4th > 7 and 9>mark_r_5th > 4):
+                    if (R_recent_char == 'ㅠ'):
+                        if (r_Energy > 10):
+                            conn.send("ㅠ\n".encode('utf-8'))
+                            print("[Result] ㅠ")
+                    else:
                         conn.send("ㅠ\n".encode('utf-8'))
                         print("[Result] ㅠ")
-                else:
-                    conn.send("ㅠ\n".encode('utf-8'))
-                    print("[Result] ㅠ")
-                    R_recent_char = 'ㅠ'
-            elif (mark_r_1st > 5 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
-                if (R_recent_char == 'ㅟ'):
-                    if (r_Energy > 8):
+                        R_recent_char = 'ㅠ'
+                elif (mark_r_1st > 5 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
+                    if (R_recent_char == 'ㅟ'):
+                        if (r_Energy > 8):
+                            conn.send("ㅟ\n".encode('utf-8'))
+                            print("[Result] ㅟ")
+                    else:
                         conn.send("ㅟ\n".encode('utf-8'))
                         print("[Result] ㅟ")
-                else:
-                    conn.send("ㅟ\n".encode('utf-8'))
-                    print("[Result] ㅟ")
-                    R_recent_char = 'ㅟ'
-        elif(mark_r_degX<10 and mark_r_degY>60 and mark_r_degZ<20 ):
-            if(mark_r_1st < 3 and mark_r_2ed < 4 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
-                if (R_recent_char == 'ㄴ'):
-                    if (r_Energy > 7):
+                        R_recent_char = 'ㅟ'
+            elif(mark_r_degX<10 and mark_r_degY>60 and mark_r_degZ<20 ):
+                if(mark_r_1st < 3 and mark_r_2ed < 4 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
+                    if (R_recent_char == 'ㄴ'):
+                        if (r_Energy > 7):
+                            conn.send("ㄴ\n".encode('utf-8'))
+                            print("[Result] ㄴ")
+                    else:
                         conn.send("ㄴ\n".encode('utf-8'))
                         print("[Result] ㄴ")
-                else:
-                    conn.send("ㄴ\n".encode('utf-8'))
-                    print("[Result] ㄴ")
-                    R_recent_char = 'ㄴ'
-            elif(mark_r_1st > 3 and mark_r_2ed < 4 and mark_r_3rd < 4 and mark_r_4th > 7 and mark_r_5th > 5 and -8>mark_r_degX):
-                if (R_recent_char == 'ㄷ'):
-                    if (r_Energy > 8):
+                        R_recent_char = 'ㄴ'
+                elif(mark_r_1st > 3 and mark_r_2ed < 4 and mark_r_3rd < 4 and mark_r_4th > 7 and mark_r_5th > 5 and -8>mark_r_degX):
+                    if (R_recent_char == 'ㄷ'):
+                        if (r_Energy > 8):
+                            conn.send("ㄷ\n".encode('utf-8'))
+                            print("[Result] ㄷ")
+                    else:
                         conn.send("ㄷ\n".encode('utf-8'))
                         print("[Result] ㄷ")
-                else:
-                    conn.send("ㄷ\n".encode('utf-8'))
-                    print("[Result] ㄷ")
-                    R_recent_char = 'ㄷ'
+                        R_recent_char = 'ㄷ'
 
-            elif (mark_r_1st > 6 and mark_r_2ed > 5 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
-                if (R_recent_char == 'ㅡ'):
-                    if (r_Energy > 8):
+                elif (mark_r_1st > 6 and mark_r_2ed > 5 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
+                    if (R_recent_char == 'ㅡ'):
+                        if (r_Energy > 8):
+                            conn.send("ㅡ\n".encode('utf-8'))
+                            print("[Result] ㅡ")
+                    else:
                         conn.send("ㅡ\n".encode('utf-8'))
                         print("[Result] ㅡ")
-                else:
-                    conn.send("ㅡ\n".encode('utf-8'))
-                    print("[Result] ㅡ")
-                    R_recent_char = 'ㅡ'
-            elif(mark_r_1st > 3 and mark_r_2ed < 4 and mark_r_3rd < 4 and mark_r_4th <4 and mark_r_5th > 5):
-                if (R_recent_char == 'ㄹ'):
-                    if (r_Energy > 7):
+                        R_recent_char = 'ㅡ'
+                elif(mark_r_1st > 3 and mark_r_2ed < 4 and mark_r_3rd < 4 and mark_r_4th <4 and mark_r_5th > 5):
+                    if (R_recent_char == 'ㄹ'):
+                        if (r_Energy > 7):
+                            conn.send("ㄹ\n".encode('utf-8'))
+                            print("[Result] ㄹ")
+                    else:
                         conn.send("ㄹ\n".encode('utf-8'))
                         print("[Result] ㄹ")
-                else:
-                    conn.send("ㄹ\n".encode('utf-8'))
-                    print("[Result] ㄹ")
-                    R_recent_char = 'ㄹ'
-            elif(mark_r_1st > 5 and 9 > mark_r_2ed > 3 and mark_r_3rd < 4 and mark_r_4th <4 and mark_r_5th < 4):
-                conn.send("ㅌ\n".encode('utf-8'))
-                print("[Result] ㅌ")
-                R_recent_char = 'ㅌ'
-            elif (mark_r_1st > 5 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
-                if (R_recent_char == 'ㅢ'):
-                    if (r_Energy > 8):
+                        R_recent_char = 'ㄹ'
+                elif(mark_r_1st > 5 and 9 > mark_r_2ed > 3 and mark_r_3rd < 4 and mark_r_4th <4 and mark_r_5th < 4):
+                    conn.send("ㅌ\n".encode('utf-8'))
+                    print("[Result] ㅌ")
+                    R_recent_char = 'ㅌ'
+                elif (mark_r_1st > 5 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3 and mark_r_degX < -3):
+                    if (R_recent_char == 'ㅢ'):
+                        if (r_Energy > 8):
+                            conn.send("ㅢ\n".encode('utf-8'))
+                            print("[Result] ㅢ")
+                    else:
                         conn.send("ㅢ\n".encode('utf-8'))
                         print("[Result] ㅢ")
-                else:
-                    conn.send("ㅢ\n".encode('utf-8'))
-                    print("[Result] ㅢ")
-                    R_recent_char = 'ㅢ'
-        if ( -20 < mark_r_degX < 50 and 40 < mark_r_degY and mark_r_degZ < 20):
-            if (4>mark_r_1st and 5<mark_r_2ed and mark_r_3rd>7 and mark_r_4th>7 and mark_r_5th>7):
-                conn.send("ㅎ\n".encode('utf-8'))
-                print("[Result] ㅎ")
-                R_recent_char = 'ㅎ'
-            if (mark_r_1st > 5 and mark_r_2ed < 4 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
-                if (R_recent_char == 'ㅓ'):
-                    if (r_Energy > 15):
-                        conn.send("ㅓ\n".encode('utf-8'))
-                        print("[Result] ㅓ")
-                else:
-                        conn.send("ㅓ\n".encode('utf-8'))
-                        print("[Result] ㅓ")
-                        R_recent_char = 'ㅓ'
-            elif (mark_r_1st > 4 and mark_r_2ed < 3 and mark_r_3rd < 3 and mark_r_4th > 7 and mark_r_5th > 7 and -8<mark_r_degX <10):
-                if (R_recent_char == 'ㅕ'):
-                    if (r_Energy > 15):
-                        conn.send("ㅕ\n".encode('utf-8'))
-                        print("[Result] ㅕ")
-                else:
-                        conn.send("ㅕ\n".encode('utf-8'))
-                        print("[Result] ㅕ")
-                        R_recent_char = 'ㅕ'
-            elif (mark_r_1st > 5 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
-                if (R_recent_char == 'ㅔ'):
-                    if (r_Energy > 8):
+                        R_recent_char = 'ㅢ'
+            if ( -20 < mark_r_degX < 50 and 40 < mark_r_degY and mark_r_degZ < 20):
+                if (4>mark_r_1st and 5<mark_r_2ed and mark_r_3rd>7 and mark_r_4th>7 and mark_r_5th>7):
+                    conn.send("ㅎ\n".encode('utf-8'))
+                    print("[Result] ㅎ")
+                    R_recent_char = 'ㅎ'
+                if (mark_r_1st > 5 and mark_r_2ed < 4 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
+                    if (R_recent_char == 'ㅓ'):
+                        if (r_Energy > 15):
+                            conn.send("ㅓ\n".encode('utf-8'))
+                            print("[Result] ㅓ")
+                    else:
+                            conn.send("ㅓ\n".encode('utf-8'))
+                            print("[Result] ㅓ")
+                            R_recent_char = 'ㅓ'
+                elif (mark_r_1st > 4 and mark_r_2ed < 3 and mark_r_3rd < 3 and mark_r_4th > 7 and mark_r_5th > 7 and -8<mark_r_degX <28):
+                    if (R_recent_char == 'ㅕ'):
+                        if (r_Energy > 15):
+                            conn.send("ㅕ\n".encode('utf-8'))
+                            print("[Result] ㅕ")
+                    else:
+                            conn.send("ㅕ\n".encode('utf-8'))
+                            print("[Result] ㅕ")
+                            R_recent_char = 'ㅕ'
+                elif (mark_r_1st > 5 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3 and mark_r_degX>8):
+                    if (R_recent_char == 'ㅔ'):
+                        if (r_Energy > 8):
+                            conn.send("ㅔ\n".encode('utf-8'))
+                            print("[Result] ㅔ")
+                    else:
                         conn.send("ㅔ\n".encode('utf-8'))
                         print("[Result] ㅔ")
-                else:
-                    conn.send("ㅔ\n".encode('utf-8'))
-                    print("[Result] ㅔ")
-                    R_recent_char = 'ㅔ'
-            elif (9>mark_r_1st >3 and mark_r_2ed < 3 and mark_r_3rd <3 and mark_r_4th > 7 and mark_r_5th < 3):
-                if (R_recent_char == 'ㅖ'):
-                    if (r_Energy > 15):
-                        conn.send("ㅖ\n".encode('utf-8'))
-                        print("[Result] ㅖ")
-                else:
-                        conn.send("ㅖ\n".encode('utf-8'))
-                        print("[Result] ㅖ")
-                        R_recent_char = 'ㅖ'
+                        R_recent_char = 'ㅔ'
+                elif (9>mark_r_1st >3 and mark_r_2ed < 3 and mark_r_3rd <3 and mark_r_4th > 7 and mark_r_5th < 3):
+                    if (R_recent_char == 'ㅖ'):
+                        if (r_Energy > 15):
+                            conn.send("ㅖ\n".encode('utf-8'))
+                            print("[Result] ㅖ")
+                    else:
+                            conn.send("ㅖ\n".encode('utf-8'))
+                            print("[Result] ㅖ")
+                            R_recent_char = 'ㅖ'
 
-        elif (mark_r_degX > 55 and -40<mark_r_degY < 60 and -10<mark_r_degZ < 55):
-            if (4<mark_r_1st and 1<mark_r_2ed < 8 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
-                if (R_recent_char == 'ㅁ'):
-                    if (r_Energy > 12):
+            elif (mark_r_degX > 55 and -40<mark_r_degY < 60 and -10<mark_r_degZ < 55):
+                if (4<mark_r_1st and 1<mark_r_2ed < 8 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
+                    if (R_recent_char == 'ㅁ'):
+                        if (r_Energy > 12):
+                            conn.send("ㅁ\n".encode('utf-8'))
+                            print("[Result] ㅁ")
+                    else:
                         conn.send("ㅁ\n".encode('utf-8'))
                         print("[Result] ㅁ")
-                else:
-                    conn.send("ㅁ\n".encode('utf-8'))
-                    print("[Result] ㅁ")
-                    R_recent_char='ㅁ'
-            if (7<mark_r_1st and 7<mark_r_2ed and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
-                if (R_recent_char == 'ㅍ'):
-                    if (r_Energy > 12):
+                        R_recent_char='ㅁ'
+                if (7<mark_r_1st and 7<mark_r_2ed and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
+                    if (R_recent_char == 'ㅍ'):
+                        if (r_Energy > 12):
+                            conn.send("ㅍ\n".encode('utf-8'))
+                            print("[Result] ㅍ")
+                    else:
                         conn.send("ㅍ\n".encode('utf-8'))
                         print("[Result] ㅍ")
-                else:
-                    conn.send("ㅍ\n".encode('utf-8'))
-                    print("[Result] ㅍ")
-                    R_recent_char='ㅍ'
-            if (4<mark_r_1st and 3<mark_r_2ed < 8 and mark_r_3rd < 3 and mark_r_4th < 8 and mark_r_5th < 3):
-                if (R_recent_char == 'ㅇ'):
-                    if (r_Energy > 13):
+                        R_recent_char='ㅍ'
+                if (4<mark_r_1st and 2<mark_r_2ed < 8 and mark_r_3rd < 3 and mark_r_4th < 8 and mark_r_5th < 3):
+                    if (R_recent_char == 'ㅇ'):
+                        if (r_Energy > 13):
+                            conn.send("ㅇ\n".encode('utf-8'))
+                            print("[Result] ㅇ")
+                    else:
                         conn.send("ㅇ\n".encode('utf-8'))
                         print("[Result] ㅇ")
-                else:
-                    conn.send("ㅇ\n".encode('utf-8'))
-                    print("[Result] ㅇ")
-                    R_recent_char='ㅇ'
-            elif (4<mark_r_1st and mark_r_2ed < 4 and mark_r_3rd < 4 and mark_r_4th < 4 and mark_r_5th < 4):
-                if (R_recent_char == 'ㅂ'):
-                    if (r_Energy > 20):
+                        R_recent_char='ㅇ'
+                elif (4<mark_r_1st and mark_r_2ed < 4 and mark_r_3rd < 4 and mark_r_4th < 4 and mark_r_5th < 4):
+                    if (R_recent_char == 'ㅂ'):
+                        if (r_Energy > 20):
+                            conn.send("ㅂ\n".encode('utf-8'))
+                            print("[Result] ㅂ")
+                    else:
                         conn.send("ㅂ\n".encode('utf-8'))
                         print("[Result] ㅂ")
-                else:
-                    conn.send("ㅂ\n".encode('utf-8'))
-                    print("[Result] ㅂ")
-                    R_recent_char='ㅂ'
-            elif (mark_r_1st > 6 and mark_r_2ed > 5 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
-                if (R_recent_char == 'ㅣ'):
-                    if (r_Energy > 8):
+                        R_recent_char='ㅂ'
+                elif (mark_r_1st > 6 and mark_r_2ed > 5 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
+                    if (R_recent_char == 'ㅣ'):
+                        if (r_Energy > 8):
+                            conn.send("ㅣ\n".encode('utf-8'))
+                            print("[Result] ㅣ")
+                    else:
                         conn.send("ㅣ\n".encode('utf-8'))
                         print("[Result] ㅣ")
-                else:
-                    conn.send("ㅣ\n".encode('utf-8'))
-                    print("[Result] ㅣ")
-                    R_recent_char = 'ㅣ'
-            elif (mark_r_1st > 5 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
-                if (R_recent_char == 'ㅐ'):
-                    if (r_Energy > 8):
+                        R_recent_char = 'ㅣ'
+                elif (mark_r_1st > 5 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
+                    if (R_recent_char == 'ㅐ'):
+                        if (r_Energy > 8):
+                            conn.send("ㅐ\n".encode('utf-8'))
+                            print("[Result] ㅐ")
+                    else:
                         conn.send("ㅐ\n".encode('utf-8'))
                         print("[Result] ㅐ")
-                else:
-                    conn.send("ㅐ\n".encode('utf-8'))
-                    print("[Result] ㅐ")
-                    R_recent_char = 'ㅐ'
-            elif (5<mark_r_1st and mark_r_2ed < 4 and mark_r_3rd >6 and mark_r_4th > 6 and mark_r_5th >6):
-                if (R_recent_char == 'ㅏ'):
-                    if (r_Energy > 10):
+                        R_recent_char = 'ㅐ'
+                elif (5<mark_r_1st and mark_r_2ed < 4 and mark_r_3rd >6 and mark_r_4th > 6 and mark_r_5th >6):
+                    if (R_recent_char == 'ㅏ'):
+                        if (r_Energy > 10):
+                            conn.send("ㅏ\n".encode('utf-8'))
+                            print("[Result] ㅏ")
+                    else:
                         conn.send("ㅏ\n".encode('utf-8'))
                         print("[Result] ㅏ")
-                else:
-                    conn.send("ㅏ\n".encode('utf-8'))
-                    print("[Result] ㅏ")
-                    R_recent_char='ㅏ'
-            elif (3<mark_r_1st<9 and mark_r_2ed < 4 and mark_r_3rd < 4 and mark_r_4th > 6 and mark_r_5th >6):
-                if (R_recent_char == 'ㅑ'):
-                    if (r_Energy > 20):
+                        R_recent_char='ㅏ'
+                elif (3<mark_r_1st<9 and mark_r_2ed < 4 and mark_r_3rd < 4 and mark_r_4th > 6 and mark_r_5th >6):
+                    if (R_recent_char == 'ㅑ'):
+                        if (r_Energy > 20):
+                            conn.send("ㅑ\n".encode('utf-8'))
+                            print("[Result] ㅑ")
+                    else:
                         conn.send("ㅑ\n".encode('utf-8'))
                         print("[Result] ㅑ")
-                else:
-                    conn.send("ㅑ\n".encode('utf-8'))
-                    print("[Result] ㅑ")
-                    R_recent_char='ㅑ'
-            elif (9>mark_r_1st >3 and mark_r_2ed < 3 and mark_r_3rd <3 and mark_r_4th > 7 and mark_r_5th < 3):
-                if (R_recent_char == 'ㅒ'):
-                    if (r_Energy > 15):
-                        conn.send("ㅒ\n".encode('utf-8'))
-                        print("[Result] ㅒ")
-                else:
-                        conn.send("ㅒ\n".encode('utf-8'))
-                        print("[Result] ㅒ")
-                        R_recent_char = 'ㅒ'
+                        R_recent_char='ㅑ'
+                elif (9>mark_r_1st >3 and mark_r_2ed < 3 and mark_r_3rd <3 and mark_r_4th > 7 and mark_r_5th < 3):
+                    if (R_recent_char == 'ㅒ'):
+                        if (r_Energy > 15):
+                            conn.send("ㅒ\n".encode('utf-8'))
+                            print("[Result] ㅒ")
+                    else:
+                            conn.send("ㅒ\n".encode('utf-8'))
+                            print("[Result] ㅒ")
+                            R_recent_char = 'ㅒ'
 
-        elif (mark_r_degX > 55 and -40<mark_r_degY < 60 and mark_r_degZ < 0):
-            if (4<mark_r_1st<9 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
-                if (R_recent_char == 'ㅗ'):
-                    if (r_Energy > 12):
+            elif (mark_r_degX > 55 and -40<mark_r_degY < 60 and mark_r_degZ < 0):
+                if (4<mark_r_1st<9 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7):
+                    if (R_recent_char == 'ㅗ'):
+                        if (r_Energy > 12):
+                            conn.send("ㅗ\n".encode('utf-8'))
+                            print("[Result] ㅗ")
+                    else:
                         conn.send("ㅗ\n".encode('utf-8'))
                         print("[Result] ㅗ")
-                else:
-                    conn.send("ㅗ\n".encode('utf-8'))
-                    print("[Result] ㅗ")
-                    R_recent_char='ㅗ'
-            if (4<mark_r_1st<9 and mark_r_2ed < 3 and mark_r_3rd < 3 and mark_r_4th > 7 and mark_r_5th > 7):
-                if (R_recent_char == 'ㅛ'):
-                    if (r_Energy > 12):
+                        R_recent_char='ㅗ'
+                if (4<mark_r_1st<9 and mark_r_2ed < 3 and mark_r_3rd < 3 and mark_r_4th > 7 and mark_r_5th > 7):
+                    if (R_recent_char == 'ㅛ'):
+                        if (r_Energy > 12):
+                            conn.send("ㅛ\n".encode('utf-8'))
+                            print("[Result] ㅛ")
+                    else:
                         conn.send("ㅛ\n".encode('utf-8'))
                         print("[Result] ㅛ")
-                else:
-                    conn.send("ㅛ\n".encode('utf-8'))
-                    print("[Result] ㅛ")
-                    R_recent_char='ㅛ'
-            elif (mark_r_1st > 5 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
-                if (R_recent_char == 'ㅚ'):
-                    if (r_Energy > 8):
+                        R_recent_char='ㅛ'
+                elif (mark_r_1st > 5 and mark_r_2ed < 3 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th < 3):
+                    if (R_recent_char == 'ㅚ'):
+                        if (r_Energy > 8):
+                            conn.send("ㅚ\n".encode('utf-8'))
+                            print("[Result] ㅚ")
+                    else:
                         conn.send("ㅚ\n".encode('utf-8'))
                         print("[Result] ㅚ")
-                else:
-                    conn.send("ㅚ\n".encode('utf-8'))
-                    print("[Result] ㅚ")
-                    R_recent_char = 'ㅚ'
+                        R_recent_char = 'ㅚ'
+        elif (L_Energy >4):
+            if (30 >mark_r_degX > -30 and 30 < mark_r_degY and mark_r_degZ > 30 and 50 >mark_l_degX > -30 and -50 < mark_l_degY<20 and mark_l_degZ > 40 ):
+                if (6 < mark_r_1st and mark_r_2ed > 5 and mark_r_3rd > 7 and mark_r_4th > 7 and mark_r_5th > 7 and 5 < mark_l_1st and mark_l_2ed > 5 and mark_l_3rd > 5 and mark_l_4th > 5 and mark_l_5th > 5):
+                    conn.send("안녕하세요\n".encode('utf-8'))
+                    print("[Result] 안녕하세요")
+                    R_recent_char = '안녕하세요'
+            elif (30 >mark_r_degX > -10 and 70 < mark_r_degY and mark_r_degZ < 5 and 10 >mark_l_degX > -30 and -40 < mark_l_degY<10 and mark_l_degZ > 60 ):
+                if (5 > mark_r_1st and mark_r_2ed < 5 and mark_r_3rd < 5 and mark_r_4th < 5 and mark_r_5th < 5 and 8 > mark_l_1st and mark_l_2ed < 5 and mark_l_3rd < 5 and mark_l_4th < 5 and mark_l_5th < 5):
+                    conn.send("감사합니다\n".encode('utf-8'))
+                    print("[Result] 감사합니다")
+                    R_recent_char = '감사합니다'
+            elif (mark_r_degX > 60 and -5 < mark_r_degY<30 and -50<mark_r_degZ < -10 and mark_l_degX > 60 and -30 < mark_l_degY<10 and 10>mark_l_degZ > -40 ):
+                if ( mark_r_1st>3 and mark_r_2ed < 4 and mark_r_3rd > 6 and mark_r_4th > 7 and mark_r_5th > 7 and 9 > mark_l_1st >2 and mark_l_2ed < 4 and mark_l_3rd > 5 and mark_l_4th > 6 and mark_l_5th > 6):
+                    conn.send("만나서\n".encode('utf-8'))
+                    print("[Result] 만나서")
+                    R_recent_char = '만나서'
+            elif (mark_r_degX < -5 and mark_r_degY>60 and -65<mark_r_degZ < 40 and -20<mark_l_degX < 40 and -30 > mark_l_degY and 20>mark_l_degZ > -40 ):
+                if ( mark_r_1st<3 and mark_r_2ed < 4 and mark_r_3rd< 3 and mark_r_4th <3 and mark_r_5th <3 and 6 > mark_l_1st and mark_l_2ed < 5 and mark_l_3rd < 5 and mark_l_4th < 4 and mark_l_5th < 4):
+                    conn.send("반갑습니다\n".encode('utf-8'))
+                    print("[Result] 반갑습니다")
+                    R_recent_char = '반갑습니다'
 
-    # if (r_1st<3 and r_2ed<3 and r_3rd>7 and r_4th>7 and r_5th>7 and r_degX<-50 and r_degY>40 and 0<r_degZ<30):
-#     #     conn.send("ㄱ\n".encode('utf-8'))
-#     #     print("[Result] ㄱ")
-#     # elif (r_1st<3 and r_2ed<3 and r_3rd>7 and r_4th>7 and r_5th>7 and -20<r_degX<20 and 70<r_degY and -70<r_degZ<10):
-#     #     conn.send("ㄴ\n".encode('utf-8'))
-#     #     print("[Result] ㄴ")
-#     # elif (3<r_1st<10 and r_2ed<3 and r_3rd<3 and r_4th>5 and r_5th>7 and -25<r_degX<20 and 40<r_degY and -45<r_degZ<0):
-#     #     conn.send("ㄷ\n".encode('utf-8'))
-#     #     print("[Result] ㄷ")
-#     # elif (6<r_1st and r_2ed>6 and r_3rd>6 and r_4th>6 and r_5th>6 and -25<r_degX<30 and -30<r_degY<60 and 40<r_degZ):
-#     #     conn.send("안녕하세요\n".encode('utf-8'))
-#     #     print("[Result] 안녕하세요")
-#     # else:
-#     #     pass
+            elif (mark_r_degX < -20 and mark_r_degY>45 and 55<mark_r_degZ and -10<mark_l_degX < 50 and -30 > mark_l_degY <10 and mark_l_degZ < -50 ):
+                if ( mark_r_1st<3 and mark_r_2ed < 4 and mark_r_3rd< 3 and mark_r_4th <3 and mark_r_5th <3 and 6 > mark_l_1st and mark_l_2ed < 5 and mark_l_3rd < 5 and mark_l_4th < 4 and mark_l_5th < 4):
+                    conn.send("입니다\n".encode('utf-8'))
+                    print("[Result] 입니다")
+                    R_recent_char = '입니다'
+
+
+
 
 
 
