@@ -74,24 +74,25 @@ global L_noChangeAcc_past  # 지난 변화 여부 체크
 
 finger_language = {'ㄱ':(0, 0, 10, 10, 10, -74, 22, 20, -3, -30, -30),
                    'ㄴ':(0, 0, 10, 10, 10, 4, 86, -34, 1, 1, -2),
-                   'ㄷ':(6, 0, 0, 10, 10, -12, 82, -45, -1, -1, 0),
+                   'ㄷ':(4, 0, 0, 10, 10, -20, 82, -25, -1, -1, 0),
+                   # '디귿':(5, 0, 0, 10, 10, 9, 82, -43, -1, 0, 1),
                    'ㄹ':(7, 0, 0, 0, 10, -17, 88, -37, -2, -2, -1),
                    'ㅁ':(10, 5, 10, 10, 10, 84, 3, 21, -3, 0, -1),
                    'ㅂ':(9, 0, 0, 0, 0, 84, 4, 23, -2, 2, -1),
                    'ㅅ':(7, 0, 0, 10, 10, -90, 6, 13, -2, 0, -1),
-                   'ㅇ':(7, 4, 0, 5, 0, 83, 13, 23, -1, 0, -1),
+                   'ㅇ':(5, 3, 0, 2, 0, 84, 15, 14, -1, -1, -2),
                    'ㅈ':(0, 0, 0, 10, 10, -89, 22, 22, -1, 1, -1),
                    'ㅊ':(0, 0, 0, 0, 9, -89, 14, 19, -1, 0, -1),
                    'ㅋ':(0, 6, 0, 10, 10, -90, 21, 13, -1, 0, -1),
-                   'ㅌ':(3, 0, 0, 0, 10, 10, 87, -31, -2, 0, -1),
+                   'ㅌ':(6, 6, 0, 0, 0, 18, 78, -50, 0, -1, -1),
                    'ㅍ':(8, 9, 10, 10, 10, 73, 28, 35, -2, 1, -1),
                    'ㅎ':(0, 8, 10, 10, 10, 11, 82, -32, -3, 1, -5),
                    'ㅏ':(10, 0, 10, 10, 10, 84, 12, 12, -1, 0, 0),
-                   'ㅑ': (7, 0, 0, 10, 10, 86, -12, 12, -1, 0, 0),
+                   'ㅑ': (8, 0, 0, 10, 10, 85, -1, 3, -1, 1, -1),
                    'ㅓ': (8, 0, 10, 10, 10, -14, 90, -28, -1, 2, -1),
-                   'ㅕ': (6, 0, 0, 10, 8, -11, 89, -25, 0, 3, 1),
+                   'ㅕ': (8, 0, 0, 10, 8, -11, 89, -25, 0, 3, 1),
                    'ㅗ': (7, 0, 10, 10, 10, 84, 22, -9, 0, 0, -1),
-                   'ㅛ': (7, 0, 0, 10, 8, 85, 14, -5, -2, 0, -1),
+                   'ㅛ': (7, 0, 0, 10, 10, 85, 14, 8, 2, 1, -1),
                    'ㅜ': (7, 0, 10, 10, 10, -90, 18, -7, -2, 0, -2),
                    'ㅠ': (7, 0, 0, 10, 7, -90, 20, -3, -1, 0, -1),
                    'ㅡ': (9, 5, 10, 10, 0, 5, 76, -58, -2, -1, 0),
@@ -350,37 +351,29 @@ def euclid(index, r_Energy):
     finger_language_value = copy.deepcopy(finger_language)
 
     for fingerSign, (r1, r2, r3, r4, r5, rdX, rdY, rdZ, raX, raY, raZ) in finger_language.items():
-        gap_r1 = abs(mark_r_1st - r1)*10
-        gap_r2 = abs(mark_r_2ed - r2)*30
-        gap_r3 = abs(mark_r_3rd - r3)*30
-        gap_r4 = abs(mark_r_4th - r4)*30
-        gap_r5 = abs(mark_r_5th - r5)*10
-        gap_rdX = abs(mark_r_degX - rdX)*15
-        gap_rdY = abs(mark_r_degY - rdY)*15
-        gap_rdZ = abs(mark_r_degZ - rdZ)
+        gap_r1 = abs(mark_r_1st - r1)*30**2
+        gap_r2 = abs(mark_r_2ed - r2)*30**2
+        gap_r3 = abs(mark_r_3rd - r3)*30**2
+        gap_r4 = abs(mark_r_4th - r4)*45**2
+        gap_r5 = abs(mark_r_5th - r5)*30**2
+        gap_rdX = abs(mark_r_degX - rdX)**2
+        gap_rdY = abs(mark_r_degY - rdY)**2
+        gap_rdZ = abs(mark_r_degZ - rdZ)**2
 
-        if (fingerSign=='ㅛ' or fingerSign=='ㅑ' ):
+        if (fingerSign=='ㅛ' or fingerSign=='ㅑ' or fingerSign=='ㅠ' or fingerSign=='ㅕ' or fingerSign=='ㄷ'):
             print (
-            fingerSign, (gap_r1 + gap_r2 + gap_r3 + gap_r4 + gap_r5 + gap_rdX + gap_rdY + gap_rdZ), gap_r1, gap_r2,
+            fingerSign, ((gap_r1 + gap_r2 + gap_r3 + gap_r4 + gap_r5)//5+ (gap_rdX + gap_rdY + gap_rdZ)//3), gap_r1, gap_r2,
             gap_r3, gap_r4, gap_r5, gap_rdX, gap_rdY, gap_rdZ)
 
         # print (fingerSign, (gap_r1 + gap_r2 + gap_r3 + gap_r4 + gap_r5 + gap_rdX + gap_rdY + gap_rdZ), gap_r1, gap_r2, gap_r3, gap_r4, gap_r5,  gap_rdX, gap_rdY, gap_rdZ)
-        finger_language_value[fingerSign] = (gap_r1 + gap_r2 + gap_r3 + gap_r4 + gap_r5 + gap_rdX + gap_rdY + gap_rdZ)
+        finger_language_value[fingerSign] = ((gap_r1 + gap_r2 + gap_r3 + gap_r4 + gap_r5)//5 + (gap_rdX + gap_rdY + gap_rdZ)//3)
         # print(gap_r1, gap_r2, gap_r3, gap_r4, gap_r5,  gap_rdX, gap_rdY, gap_rdZ, gap_raX, gap_raY, gap_raZ)
-
-    min = 1000
-    result = ''
-    for fingerSign, value in finger_language_value.items():
-        if value < min:
-            result = fingerSign
-            min = value
 
 
     a = sorted(finger_language_value.items(), key=lambda x:x[1])
     print(a)
+    print(a[0])
 
-    print(result)
-    conn.send(result)
 
 
 
