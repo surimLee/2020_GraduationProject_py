@@ -2,30 +2,51 @@
 #include <ArduinoBLE.h>
 
 BLEService RightService("19b10000-e8f2-537e-4f6c-d104768a1214");
-BLEStringCharacteristic RightChar("D8756BD2-7EFC-4B48-B53C-47EBCA8C2300", BLERead | BLENotify, 40);
+BLEStringCharacteristic RightChar("D8756BD2-7EFC-4B48-B53C-47EBCA8C2300", BLERead | BLENotify, 100);
 
 /*
  A0~A3, A6 : FLEX SENSOR
  LSM6DS3 : I2C로 연결 [A4/SDA, A5/SCL]
  Acceleration Range [-4 | +4]
  Gyroscope range [-2000 | +2000]
+ 
+
+오른손 64:fe:15:11:58:93
+왼손 60:24:66:1c:40:e3
+
+엄지 검지 중지 약지 새끼
+0 검지
+1 엄지
+2 중지
+3 약지
+6 새끼
 */
 
 //variable initializtion
 //엄지손가락
-int FLEX_PIN1 = A0;
+int FLEX_PIN1 = A1;
+int sensorMin1 = 751;
+int sensorMax1 = 917;
 
 //검지손가락
-int FLEX_PIN2 = A1;
+int FLEX_PIN2 = A0;
+int sensorMin2 = 727;
+int sensorMax2 = 907;
 
 //중지손가락
 int FLEX_PIN3 = A2;
+int sensorMin3 = 760;
+int sensorMax3 = 925;
 
 //약지손가락
 int FLEX_PIN4 = A3;
+int sensorMin4 = 767;
+int sensorMax4 = 899;
 
 //새끼손가락
 int FLEX_PIN5 = A6;
+int sensorMin5 = 749;
+int sensorMax5 = 902;
 
 float ac_x, ac_y, ac_z;
 float gy_x, gy_y, gy_z;
@@ -66,12 +87,32 @@ void updateData() {
   int flexADC4;
   int flexADC5;
 
+  int angle1;
+  int angle2;
+  int angle3;
+  int angle4;
+  int angle5;
+
   // 아날로그 입력받음 (0~1023)
   flexADC1 = analogRead(FLEX_PIN1);
   flexADC2 = analogRead(FLEX_PIN2);
   flexADC3 = analogRead(FLEX_PIN3);
   flexADC4 = analogRead(FLEX_PIN4);
   flexADC5 = analogRead(FLEX_PIN5);
+
+  //플렉스센서값 한정
+  flexADC1 = constrain(flexADC1, sensorMin1, sensorMax1);
+  flexADC2 = constrain(flexADC2, sensorMin2, sensorMax2);
+  flexADC3 = constrain(flexADC3, sensorMin3, sensorMax3);
+  flexADC4 = constrain(flexADC4, sensorMin4, sensorMax4);
+  flexADC5 = constrain(flexADC5, sensorMin5, sensorMax5);
+
+  //플렉스센서값 매핑
+  angle1 = map(flexADC1, sensorMin1, sensorMax1, 0, 10);
+  angle2 = map(flexADC2, sensorMin2, sensorMax2, 0, 10);
+  angle3 = map(flexADC3, sensorMin3, sensorMax3, 0, 10);
+  angle4 = map(flexADC4, sensorMin4, sensorMax4, 0, 10);
+  angle5 = map(flexADC5, sensorMin5, sensorMax5, 0, 10);
   
   if (IMU.accelerationAvailable() 
       && IMU.gyroscopeAvailable()) {
@@ -98,17 +139,24 @@ void updateData() {
   GY_Y = int(gy_y*100);
   GY_Z = int(gy_z*100);
 
-  String flex1 = String(flexADC1);
-  String flex2 = String(flexADC2);
-  String flex3 = String(flexADC3);
-  String flex4 = String(flexADC4);
-  String flex5 = String(flexADC5);
+  String flex1 = String(angle1);
+  String flex2 = String(angle2);
+  String flex3 = String(angle3);
+  String flex4 = String(angle4);
+  String flex5 = String(angle5);
   String ax = String(AC_X);
   String ay = String(AC_Y);
   String az = String(AC_Z);
   String gx = String(GY_X);
   String gy = String(GY_Y);
   String gz = String(GY_Z);
+/*
+  String flex1 = String(flexADC1);
+  String flex2 = String(flexADC2);
+  String flex3 = String(flexADC3);
+  String flex4 = String(flexADC4);
+  String flex5 = String(flexADC5);
+  */
 
   Right_String = "R " + flex1 + " " + flex2 + " " + flex3 + " " + flex4 + " "+ flex5 + " "
                  + ax + " " + ay + " " + az + " "
@@ -129,6 +177,10 @@ void loop() {
   // if a central is connected to peripheral:
   if (central) {
     while (central.connected()) {
+      /*
+        Serial.print("Connected to central: ");
+        Serial.println(central.address());
+        */
         updateData();
         delay(250);
       }
