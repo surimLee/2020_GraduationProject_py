@@ -75,7 +75,6 @@ global L_noChangeAcc_past  # 지난 변화 여부 체크
 finger_language = {'ㄱ':(0, 0, 10, 10, 10, -74, 22, 20, -3, -30, -30),
                    'ㄴ':(0, 0, 10, 10, 10, 4, 86, -34, 1, 1, -2),
                    'ㄷ':(4, 0, 0, 10, 10, -20, 82, -25, -1, -1, 0),
-                   # '디귿':(5, 0, 0, 10, 10, 9, 82, -43, -1, 0, 1),
                    'ㄹ':(7, 0, 0, 0, 10, -17, 88, -37, -2, -2, -1),
                    'ㅁ':(10, 5, 10, 10, 10, 84, 3, 21, -3, 0, -1),
                    'ㅂ':(9, 0, 0, 0, 0, 84, 4, 23, -2, 2, -1),
@@ -231,7 +230,7 @@ def input_txt(line):
                                                 right_accY[-2], right_accZ[-2])
 
                     # 현재 동작중이면
-                    if (R_Energy > 300):
+                    if (R_Energy > 500):
                         is_R_moving.append(1)
                         # print("동작중임")
 
@@ -351,19 +350,19 @@ def euclid(index, r_Energy):
     finger_language_value = copy.deepcopy(finger_language)
 
     for fingerSign, (r1, r2, r3, r4, r5, rdX, rdY, rdZ, raX, raY, raZ) in finger_language.items():
-        gap_r1 = abs(mark_r_1st - r1)*30**2
-        gap_r2 = abs(mark_r_2ed - r2)*30**2
-        gap_r3 = abs(mark_r_3rd - r3)*30**2
-        gap_r4 = abs(mark_r_4th - r4)*45**2
-        gap_r5 = abs(mark_r_5th - r5)*30**2
-        gap_rdX = abs(mark_r_degX - rdX)**2
-        gap_rdY = abs(mark_r_degY - rdY)**2
-        gap_rdZ = abs(mark_r_degZ - rdZ)**2
+        gap_r1 = ((mark_r_1st - r1)*30)**2
+        gap_r2 = ((mark_r_2ed - r2)*30)**2
+        gap_r3 = ((mark_r_3rd - r3)*30)**2
+        gap_r4 = ((mark_r_4th - r4)*45)**2
+        gap_r5 = ((mark_r_5th - r5)*30)**2
+        gap_rdX = (mark_r_degX - rdX)**2
+        gap_rdY = (mark_r_degY - rdY)**2
+        gap_rdZ = (mark_r_degZ - rdZ)**2
 
-        if (fingerSign=='ㅛ' or fingerSign=='ㅑ' or fingerSign=='ㅠ' or fingerSign=='ㅕ' or fingerSign=='ㄷ'):
-            print (
-            fingerSign, ((gap_r1 + gap_r2 + gap_r3 + gap_r4 + gap_r5)//5+ (gap_rdX + gap_rdY + gap_rdZ)//3), gap_r1, gap_r2,
-            gap_r3, gap_r4, gap_r5, gap_rdX, gap_rdY, gap_rdZ)
+        # if (fingerSign=='ㅛ' or fingerSign=='ㅑ' or fingerSign=='ㅠ' or fingerSign=='ㅕ' or fingerSign=='ㄷ'):
+        #     print (
+        #     fingerSign, ((gap_r1 + gap_r2 + gap_r3 + gap_r4 + gap_r5)//5+ (gap_rdX + gap_rdY + gap_rdZ)//3), gap_r1, gap_r2,
+        #     gap_r3, gap_r4, gap_r5, gap_rdX, gap_rdY, gap_rdZ)
 
         # print (fingerSign, (gap_r1 + gap_r2 + gap_r3 + gap_r4 + gap_r5 + gap_rdX + gap_rdY + gap_rdZ), gap_r1, gap_r2, gap_r3, gap_r4, gap_r5,  gap_rdX, gap_rdY, gap_rdZ)
         finger_language_value[fingerSign] = ((gap_r1 + gap_r2 + gap_r3 + gap_r4 + gap_r5)//5 + (gap_rdX + gap_rdY + gap_rdZ)//3)
@@ -372,11 +371,11 @@ def euclid(index, r_Energy):
 
     a = sorted(finger_language_value.items(), key=lambda x:x[1])
     print(a)
-    print(a[0])
-
-
-
-
+    result, b = a[0]
+    if (b < 5000):
+        print(result)
+        conn.send("{}\n".format(result).encode('utf-8'))
+        time.sleep(0.5)
 
 
 
