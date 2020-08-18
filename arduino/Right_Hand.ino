@@ -119,6 +119,9 @@ void updateData() {
 
   int ax_Min = -100, ay_Min = -100, az_Min = -100;
   int ax_Max = 100, ay_Max = 100, az_Max = 100;
+
+  int gx_Min = -12500, gy_Min = -12500, gz_Min = -12500;
+  int gx_Max = 12500, gy_Max = 12500, gz_Max = 12500;
   
   AC_X = int(ac_x*100);
   AC_Y = int(ac_y*100);
@@ -135,6 +138,14 @@ void updateData() {
   AC_X = map(AC_X, ax_Min, ax_Max, -90, 90);
   AC_Y = map(AC_Y, ay_Min, ay_Max, -90, 90);
   AC_Z = map(AC_Z, az_Min, az_Max, -90, 90);
+
+  GY_X = constrain(GY_X, gx_Min, gx_Max);
+  GY_Y = constrain(GY_Y, gy_Min, gy_Max);
+  GY_Z = constrain(GY_Z, gz_Min, gz_Max);
+
+  GY_X = map(GY_X, gx_Min, gx_Max, -30, 30);
+  GY_Y = map(GY_Y, gy_Min, gy_Max, -30, 30);
+  GY_Z = map(GY_Z, gz_Min, gz_Max, -30, 30);
 
   String flex1 = String(angle1);
   String flex2 = String(angle2);
