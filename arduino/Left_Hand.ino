@@ -61,7 +61,7 @@ void setup() {
   BLE.addService(LeftService);
   
   // start advertising
-  BLE.setLocalName("Left");
+  BLE.setLocalName("LEFT");
   
   // start advertising
   BLE.advertise();
@@ -108,17 +108,15 @@ void updateData() {
     IMU.readAcceleration(ac_x, ac_y, ac_z);
     IMU.readGyroscope(gy_x, gy_y, gy_z);
   }
-  /*
-  if (IMU.gyroscopeAvailable()) {
-    IMU.readGyroscope(gy_x, gy_y, gy_z);
-  }
-*/
-  int AC_X;
-  int AC_Y;
-  int AC_Z;
-  int GY_X;
-  int GY_Y;
-  int GY_Z;
+
+  int AC_X, AC_Y, AC_Z;
+  int GY_X, GY_Y, GY_Z;
+
+  int ax_Min = -100, ay_Min = -100, az_Min = -100;
+  int ax_Max = 100, ay_Max = 100, az_Max = 100;
+
+  int gx_Min = -12500, gy_Min = -12500, gz_Min = -12500;
+  int gx_Max = 12500, gy_Max = 12500, gz_Max = 12500;
   
   AC_X = int(ac_x*100);
   AC_Y = int(ac_y*100);
@@ -127,6 +125,22 @@ void updateData() {
   GY_X = int(gy_x*100);
   GY_Y = int(gy_y*100);
   GY_Z = int(gy_z*100);
+
+  AC_X = constrain(AC_X, ax_Min, ax_Max);
+  AC_Y = constrain(AC_Y, ay_Min, ay_Max);
+  AC_Z = constrain(AC_Z, az_Min, az_Max);
+
+  AC_X = map(AC_X, ax_Min, ax_Max, -90, 90);
+  AC_Y = map(AC_Y, ay_Min, ay_Max, -90, 90);
+  AC_Z = map(AC_Z, az_Min, az_Max, -90, 90);
+
+  GY_X = constrain(GY_X, gx_Min, gx_Max);
+  GY_Y = constrain(GY_Y, gy_Min, gy_Max);
+  GY_Z = constrain(GY_Z, gz_Min, gz_Max);
+
+  GY_X = map(GY_X, gx_Min, gx_Max, -30, 30);
+  GY_Y = map(GY_Y, gy_Min, gy_Max, -30, 30);
+  GY_Z = map(GY_Z, gz_Min, gz_Max, -30, 30);
 
   String flex1 = String(angle1);
   String flex2 = String(angle2);
@@ -139,7 +153,7 @@ void updateData() {
   String gx = String(GY_X);
   String gy = String(GY_Y);
   String gz = String(GY_Z);
-    /*
+/*
   String flex1 = String(flexADC1);
   String flex2 = String(flexADC2);
   String flex3 = String(flexADC3);
@@ -166,7 +180,7 @@ void loop() {
   // if a central is connected to peripheral:
   if (central) {
     while (central.connected()) {
-       /*
+      /*
         Serial.print("Connected to central: ");
         Serial.println(central.address());
         */
